@@ -1,8 +1,17 @@
-nav {
-  min-width: 250px;
+#root {
+  display: flex;
+  justify-content: center;
 }
 
 main {}
+
+nav {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
 
 button, input[type="submit"], input[type="reset"] {
 	background: none;
@@ -36,4 +45,22 @@ input:focus {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.border {
+  border: 2px solid var(--grey-light);
+}
+
+@media only screen and (max-width: 600px) {
+  .payment-methods {
+    flex-direction: column;
+  }
 }

@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Operation, parallel, put } from "starfx";
+import { RouterProvider } from "react-router-dom";
+import { Operation, createStore, parallel, put, takeEvery } from "starfx";
 import { Provider } from "starfx/react";
-import { configureStore } from "starfx/store";
 import { api, bootup, initialState, schema, thunks } from "./api.ts";
-import { App } from "./app.tsx";
+import { router } from "./router.tsx";
 
 init();
 
@@ -13,10 +13,17 @@ function init() {
   if (!el) {
     throw new Error("root element not found");
   }
-  const store = configureStore({ initialState });
+  const store = createStore({ initialState });
   (window as any).store = store;
   store.run(function* (): Operation<void> {
-    const group = yield* parallel([api.bootup, thunks.bootup]);
+    const group = yield* parallel([
+      takeEvery("*", function* (action) {
+        if (action.type === "store") return;
+        console.log("ACTION", action);
+      }),
+      api.bootup,
+      thunks.bootup,
+    ]);
     yield* put(bootup());
     yield* group;
   });
@@ -24,7 +31,7 @@ function init() {
   ReactDOM.createRoot(el).render(
     <React.StrictMode>
       <Provider schema={schema} store={store}>
-        <App />
+        <RouterProvider router={router} />
       </Provider>
     </React.StrictMode>,
   );

@@ -5,14 +5,20 @@
   },
   "formatter": {
     "enabled": true,
+    "ignore": ["dist"],
     "indentStyle": "space"
   },
   "linter": {
     "enabled": true,
+    "ignore": ["dist"],
     "rules": {
       "recommended": true,
       "suspicious": {
         "noExplicitAny": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off",
+        "useYield": "off"
       }
     }
   }
