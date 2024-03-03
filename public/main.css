@@ -1,0 +1,39 @@
+nav {
+  min-width: 250px;
+}
+
+main {}
+
+button, input[type="submit"], input[type="reset"] {
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+
+label {
+  font-weight: bold;
+}
+
+input {
+  padding: 0.4rem 0.2rem;
+  border: 2px solid var(--visited);
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+input::placeholder {
+  color: var(--grey-light);
+}
+
+input:focus {
+  outline: none !important;
+  border: 2px solid var(--hover);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
