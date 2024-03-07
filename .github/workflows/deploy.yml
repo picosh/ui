@@ -23,7 +23,7 @@ jobs:
         with:
           user: pico
           key: ${{ secrets.PRIVATE_KEY }}
-          src: './dist'
+          src: './dist/'
           project: "ui-${{ steps.vars.outputs.sha_short }}"
           promote: "ui"
           retain: "ui-"
