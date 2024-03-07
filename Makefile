@@ -3,7 +3,7 @@ local:
 .PHONY: local
 
 deploy:
-	rsync -e "ssh -p 2222" -rv public/ hey.pgs:/ui
+	rsync -e "ssh -p 2222" -rv public/ pico.pgs:/ui
 .PHONY: deploy
 
 fmt:
