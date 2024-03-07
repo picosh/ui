@@ -21,6 +21,10 @@ dev:
 	npm run dev
 .PHONY: dev
 
+install:
+	npm install
+.PHONY: install
+
 build:
 	npm run build
 .PHONY: build

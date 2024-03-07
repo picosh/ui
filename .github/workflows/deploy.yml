@@ -1,0 +1,30 @@
+name: deploy
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # need entire history
+          fetch-depth: 0
+      - name: Build site
+        run: |
+          make install
+          make build
+      - name: Set outputs
+        id: vars
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: publish to pgs
+        uses: picosh/pgs-action@v3
+        with:
+          user: pico
+          key: ${{ secrets.PRIVATE_KEY }}
+          src: './dist'
+          project: "ui-${{ steps.vars.outputs.sha_short }}"
+          promote: "ui"
+          retain: "ui-"
+          retain_num: 1
