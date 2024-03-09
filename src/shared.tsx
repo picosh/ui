@@ -2,7 +2,14 @@ import { plusUrl } from "@app/router";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useApi, useLoaderSuccess, useQuery } from "starfx/react";
-import { fetchOrCreateToken, registerUser, schema, useSelector } from "./api";
+import {
+  fetchOrCreateToken,
+  registerUser,
+  schema,
+  selectFeatureByName,
+  selectHasRegistered,
+  useSelector,
+} from "./api";
 
 const bytesToMb = (num: number) => num / 1000 / 1000;
 const bytesToGb = (num: number) => bytesToMb(num) / 1000;
@@ -53,42 +60,46 @@ export const PubkeyView = ({ pubkey }: { pubkey: string }) => {
   return <code className="text-xs">{pubkey}</code>;
 };
 
-export const RssBox = () => {
+export const RssBox = ({ showTitle = true }: { showTitle?: boolean }) => {
   useQuery(fetchOrCreateToken());
   const token = useSelector(schema.rssToken.select);
 
   return (
-    <div className="box">
-      <h3 className="text-lg" id="membership-notifications">
-        Membership Notifications
-      </h3>
+    <div className="box group">
+      {showTitle ? (
+        <h3 className="text-lg" id="membership-notifications">
+          Membership Notifications
+        </h3>
+      ) : null}
 
-      <p>
+      <div>
         We provide a special RSS feed for all pico users in order for us to send
         direct notifications to users. This is where we will send you{" "}
         <code>pico+</code> expiration notifications. To be clear, this is opt-in
         and highly recommended.
-      </p>
+      </div>
 
-      <pre>https://auth.pico.sh/rss/{token}</pre>
+      <pre className="m-0">https://auth.pico.sh/rss/{token}</pre>
 
-      <h4 className="text-md">
+      <h4 className="text-md m-0">
         <a href="https://pico.sh/feeds">feeds.sh</a>
       </h4>
-      <p>
-        Create a file to be uploaded to feeds (<code>pico.txt</code>):
-      </p>
 
-      <pre>{`=: email rss@myemail.com
+      <div>
+        Create a file to be uploaded to feeds (<code>pico.txt</code>):
+      </div>
+
+      <pre className="m-0">{`=: email rss@myemail.com
 =: digest_interval 1day
 => https://auth.pico.sh/rss/${token}`}</pre>
 
-      <pre>rsync pico.txt feeds.sh:/</pre>
+      <pre className="m-0">rsync pico.txt feeds.sh:/</pre>
     </div>
   );
 };
 
 export function SignupForm({ onSuccess }: { onSuccess: () => void }) {
+  const hasRegistered = useSelector(selectHasRegistered);
   const [name, setName] = useState("");
   const loader = useApi(registerUser({ name }));
   const user = useSelector(schema.user.select);
@@ -100,6 +111,8 @@ export function SignupForm({ onSuccess }: { onSuccess: () => void }) {
   useLoaderSuccess(loader, () => {
     onSuccess();
   });
+
+  if (hasRegistered) return null;
 
   return (
     <form onSubmit={onSubmit} className="group">
@@ -122,7 +135,12 @@ export function SignupForm({ onSuccess }: { onSuccess: () => void }) {
 
       <BannerLoader {...loader} />
 
-      <Button type="submit" isLoading={loader.isLoading} className="btn">
+      <Button
+        type="submit"
+        isLoading={loader.isLoading}
+        disabled={hasRegistered}
+        className="btn"
+      >
         Signup
       </Button>
 
@@ -135,23 +153,25 @@ export function SignupForm({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
+export function PlusBox() {
+  const hasPlus = useSelector((s) => selectFeatureByName(s, { name: "pgs" }));
+  if (hasPlus) return null;
+  return (
+    <div className="group box">
+      <div>
+        You are not a <code>pico+</code> member.
+      </div>
+      <div>
+        <Link to={plusUrl()} className="btn-link">
+          JOIN
+        </Link>
+      </div>
+    </div>
+  );
+}
+
 export function FeaturesTable() {
   const features = useSelector(schema.features.selectTableAsList);
-  if (features.length === 0) {
-    return (
-      <div className="group box">
-        <div>
-          You are not a <code>pico+</code> member.
-        </div>
-        <div>
-          <Link to={plusUrl()} className="btn-link">
-            JOIN
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <table className="w-full box">
       <thead>

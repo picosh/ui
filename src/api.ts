@@ -190,10 +190,7 @@ export const fetchOrCreateToken = api.put<never, { token: string }>(
       yield* schema.update(schema.rssToken.set(value.token));
     },
     mockMdw({
-      id: "333",
-      name: "pico-rss",
-      created_at: now,
-      expires_at: year,
+      token: "asbcasasd",
     }),
   ],
 );
