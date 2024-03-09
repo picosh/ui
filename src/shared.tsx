@@ -219,13 +219,14 @@ export function PubkeysTable() {
       <thead>
         <tr>
           <th className="text-left">Key</th>
+          <th className="text-center">Current</th>
           <th className="text-left">Created At</th>
         </tr>
       </thead>
       <tbody>
         {pubkeys.length === 0 ? (
           <tr>
-            <td colSpan={4} className="text-center">
+            <td colSpan={3} className="text-center">
               No pubkeys?
             </td>
           </tr>
@@ -234,8 +235,10 @@ export function PubkeysTable() {
           return (
             <tr key={pubkey.id}>
               <td className="text-left">
-                {pubkey.key === user.pubkey ? "*" : ""}{" "}
                 <PubkeyView pubkey={pubkey.key} />
+              </td>
+              <td className="text-center">
+                {pubkey.key === user.pubkey ? "*" : ""}{" "}
               </td>
               <td className="text-left">
                 {new Date(pubkey.created_at).toDateString()}
