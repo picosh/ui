@@ -14,7 +14,7 @@ import { TypedUseSelectorHook, useSelector as useSel } from "starfx/react";
 function mockMdw(data: any, status = 200) {
   return function* (ctx: ApiCtx, next: Next) {
     const isDev = import.meta.env.DEV;
-    if (isDev) {
+    if (!isDev) {
       yield* next();
       return;
     }
