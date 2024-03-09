@@ -53,10 +53,10 @@ export const [schema, initialState] = createSchema({
   }),
 });
 export type WebState = typeof initialState;
-type User = WebState["user"];
-type Token = WebState["tokens"][string];
-type Pubkey = WebState["pubkeys"][string];
-type FeatureFlag = WebState["features"][string];
+export type User = WebState["user"];
+export type Token = WebState["tokens"][string];
+export type Pubkey = WebState["pubkeys"][string];
+export type FeatureFlag = WebState["features"][string];
 
 export const useSelector: TypedUseSelectorHook<WebState> = useSel;
 
@@ -82,7 +82,7 @@ api.use(function* (ctx, next) {
 });
 api.use(mdw.api({ schema }));
 api.use(api.routes());
-api.use(function*(ctx, next) {
+api.use(function* (ctx, next) {
   ctx.request = ctx.req({
     headers: {
       "Content-Type": "application/json",

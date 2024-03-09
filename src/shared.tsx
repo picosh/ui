@@ -49,6 +49,10 @@ export function Button({
   );
 }
 
+export const PubkeyView = ({ pubkey }: { pubkey: string }) => {
+  return <code className="text-xs">{pubkey}</code>;
+};
+
 export const RssBox = () => {
   useQuery(fetchOrCreateToken());
   const token = useSelector(schema.rssToken.select);
@@ -102,7 +106,7 @@ export function SignupForm({ onSuccess }: { onSuccess: () => void }) {
       <div className="font-bold">pubkey</div>
 
       <div>
-        <code>{user.pubkey}</code>
+        <PubkeyView pubkey={user.pubkey} />
       </div>
 
       <label htmlFor="name">username</label>
@@ -210,7 +214,8 @@ export function PubkeysTable() {
           return (
             <tr key={pubkey.id}>
               <td className="text-left">
-                {pubkey.key === user.pubkey ? "*" : ""} {pubkey.key}
+                {pubkey.key === user.pubkey ? "*" : ""}{" "}
+                <PubkeyView pubkey={pubkey.key} />
               </td>
               <td className="text-left">
                 {new Date(pubkey.created_at).toDateString()}
@@ -266,7 +271,7 @@ export function UserBox() {
     <div className="box">
       <div className="font-bold">pubkey</div>
       <div>
-        <code>{user.pubkey}</code>
+        <PubkeyView pubkey={user.pubkey} />
       </div>
 
       <div className="font-bold">username</div>
