@@ -82,7 +82,7 @@ api.use(function* (ctx, next) {
 });
 api.use(mdw.api({ schema }));
 api.use(api.routes());
-api.use(mdw.fetch({ baseUrl: "localhost:5000/api" }));
+api.use(mdw.fetch({ baseUrl: "http://localhost:5000/api" }));
 
 export const selectHasRegistered = createSelector(
   schema.user.select,
