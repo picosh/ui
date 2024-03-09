@@ -82,6 +82,14 @@ api.use(function* (ctx, next) {
 });
 api.use(mdw.api({ schema }));
 api.use(api.routes());
+api.use(function*(ctx, next) {
+  ctx.request = ctx.req({
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  yield* next();
+});
 api.use(mdw.fetch({ baseUrl: `${location.origin}/api` }));
 
 export const selectHasRegistered = createSelector(
