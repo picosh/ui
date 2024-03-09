@@ -1,4 +1,6 @@
 import {
+  ApiCtx,
+  Next,
   createApi,
   createSchema,
   createSelector,
@@ -8,6 +10,19 @@ import {
   slice,
 } from "starfx";
 import { TypedUseSelectorHook, useSelector as useSel } from "starfx/react";
+
+function mockMdw(data: any, status = 200) {
+  return function* (ctx: ApiCtx, next: Next) {
+    const isDev = import.meta.env.DEV;
+    if (!isDev) {
+      yield* next();
+      return;
+    }
+
+    ctx.response = new Response(JSON.stringify(data), { status });
+    yield* next();
+  };
+}
 
 const unknown = "unknown";
 const now = new Date().toISOString();
@@ -22,12 +37,11 @@ export const [schema, initialState] = createSchema({
     username: unknown,
     pubkey: "SHA256:GpgLu/REpFbhrJrqzLDfnms5fKfCODbHo17Q1ZO/lLo",
   }),
-  rssToken: slice.obj({
-    id: "",
-    name: unknown,
-    created_at: now,
-    expires_at: year,
+  rssToken: slice.str(),
+  tokens: slice.table({
+    empty: { id: "", name: unknown, created_at: now, expires_at: year },
   }),
+  pubkeys: slice.table({ empty: { id: "", key: "", created_at: now } }),
   features: slice.table({
     empty: {
       id: "",
@@ -40,7 +54,8 @@ export const [schema, initialState] = createSchema({
 });
 export type WebState = typeof initialState;
 type User = WebState["user"];
-type Token = WebState["rssToken"];
+type Token = WebState["tokens"][string];
+type Pubkey = WebState["pubkeys"][string];
 type FeatureFlag = WebState["features"][string];
 
 export const useSelector: TypedUseSelectorHook<WebState> = useSel;
@@ -67,7 +82,7 @@ api.use(function* (ctx, next) {
 });
 api.use(mdw.api({ schema }));
 api.use(api.routes());
-api.use(mdw.fetch({ baseUrl: "localhost:5000" }));
+api.use(mdw.fetch({ baseUrl: "localhost:5000/api" }));
 
 export const selectHasRegistered = createSelector(
   schema.user.select,
@@ -89,12 +104,8 @@ export const fetchUser = api.get<never, User>("/pico", [
 
     yield* schema.update(schema.user.set(ctx.json.value));
   },
-  function* (ctx, next) {
-    ctx.response = new Response(JSON.stringify({}), { status: 404 });
-    // const mocked = { user_id: "123", username: "erock", pubkey: "whatever" };
-    // ctx.response = new Response(JSON.stringify(mocked));
-    yield* next();
-  },
+  mockMdw({}, 404),
+  // mockMdw({ user_id: "123", username: "erock", pubkey: "whatever" })
 ]);
 
 export const registerUser = api.post<{ name: string }, User>("/users", [
@@ -111,13 +122,12 @@ export const registerUser = api.post<{ name: string }, User>("/users", [
     yield* schema.update(schema.user.set(ctx.json.value));
   },
   function* (ctx, next) {
-    const mocked = {
+    const mock = mockMdw({
       user_id: "123",
       username: ctx.payload.name,
       pubkey: "whatever",
-    };
-    ctx.response = new Response(JSON.stringify(mocked));
-    yield* next();
+    });
+    yield* mock(ctx, next);
   },
 ]);
 
@@ -139,46 +149,85 @@ export const fetchFeatures = api.get<never, { features: FeatureFlag[] }>(
       );
       yield* schema.update(schema.features.add(ff));
     },
-    function* (ctx, next) {
-      /*const data = JSON.stringify({
-        features: [
-          {
-            id: "1",
-            name: "pgs",
-            created_at: now,
-            expires_at: year,
-            data: {
-              storage_max: 10_000_000_000,
-              file_max: 50_000_000,
-            },
+    mockMdw({ features: [] }),
+    /*
+    mockMdw({
+      features: [
+        {
+          id: "1",
+          name: "pgs",
+          created_at: now,
+          expires_at: year,
+          data: {
+            storage_max: 10_000_000_000,
+            file_max: 50_000_000,
           },
-        ],
-      });
-      ctx.response = new Response(data);*/
-      ctx.response = new Response(JSON.stringify({ features: [] }));
-      yield* next();
-    },
+        },
+      ],
+    }),
+    */
   ],
 );
 
-export const fetchOrCreateToken = api.put<never, Token>("/rss-token", [
+export const fetchOrCreateToken = api.put<never, { token: string }>(
+  "/rss-token",
+  [
+    function* (ctx, next) {
+      yield* next();
+      if (!ctx.json.ok) {
+        return;
+      }
+
+      const value = ctx.json.value;
+      yield* schema.update(schema.rssToken.set(value.token));
+    },
+    mockMdw({
+      id: "333",
+      name: "pico-rss",
+      created_at: now,
+      expires_at: year,
+    }),
+  ],
+);
+
+export const fetchPubkeys = api.get<never, { pubkeys: Pubkey[] }>("/pubkeys", [
   function* (ctx, next) {
     yield* next();
     if (!ctx.json.ok) {
       return;
     }
 
-    const token = ctx.json.value;
-    yield* schema.update(schema.rssToken.set(token));
+    const pubkeys = ctx.json.value.pubkeys.reduce<Record<string, Pubkey>>(
+      (acc, pk) => {
+        acc[pk.id] = pk;
+        return acc;
+      },
+      {},
+    );
+    yield* schema.update(schema.pubkeys.set(pubkeys));
   },
+  mockMdw({
+    pubkeys: [{ id: "1111", key: "xxx", created_at: now }],
+  }),
+]);
+
+export const fetchTokens = api.get<never, { tokens: Token[] }>("/tokens", [
   function* (ctx, next) {
-    const data = JSON.stringify({
-      id: "333",
-      name: "pico-rss",
-      created_at: now,
-      expires_at: year,
-    });
-    ctx.response = new Response(data);
     yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    const tokens = ctx.json.value.tokens.reduce<Record<string, Token>>(
+      (acc, pk) => {
+        acc[pk.id] = pk;
+        return acc;
+      },
+      {},
+    );
+    yield* schema.update(schema.tokens.set(tokens));
   },
+  mockMdw({
+    tokens: [{ id: "2222", name: "chat", created_at: now, expires_at: year }],
+  }),
 ]);
