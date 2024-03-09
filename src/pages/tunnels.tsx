@@ -13,16 +13,17 @@ export function Exposition() {
 
       <p>
         Let that sink in. We can build APIs without worrying about
-        authentication. The API isn't publicly accessible all. No one can try to
-        exploit it except for registered users. Of course the catch is that our
-        users need to be able to run ssh commands. But if we can operate under
-        that assumption, this is great DX and UX.
+        authentication! All you need to store is the user's pubkey. The API
+        isn't publicly accessible either. No one can try to exploit it except
+        for registered users. Of course the catch is that our users need to be
+        able to run SSH commands. But if we can operate under that assumption,
+        it's a pretty fantastic DX and UX.
       </p>
 
       <p>
         Pretty sweet, huh? With that we are excited to introduce everyone to{" "}
         <a href="https://github.com/picosh/ptun">ptun</a>, a golang library that
-        will serve your website over an SSH tunnel.
+        will serve your websites over an SSH tunnel.
       </p>
 
       <p className="m-0 mb-2">
@@ -35,7 +36,8 @@ export function Exposition() {
 
       <p className="m-0 mb-2">
         We also use web tunnels to serve private sites on{" "}
-        <a href="pgs.sh">pgs.sh</a> which is our static hosting platform.
+        <a href="pgs.sh">pgs.sh</a> which is our static hosting platform -- and
+        how you accessed this site.
       </p>
 
       <hr />

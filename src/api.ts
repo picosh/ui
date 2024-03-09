@@ -14,7 +14,7 @@ import { TypedUseSelectorHook, useSelector as useSel } from "starfx/react";
 function mockMdw(data: any, status = 200) {
   return function* (ctx: ApiCtx, next: Next) {
     const isDev = import.meta.env.DEV;
-    if (!isDev) {
+    if (isDev) {
       yield* next();
       return;
     }
@@ -91,6 +91,7 @@ api.use(function* (ctx, next) {
   yield* next();
 });
 api.use(mdw.fetch({ baseUrl: `${location.origin}/api` }));
+// api.use(mdw.fetch({ baseUrl: "http://localhost:5000/api" }));
 
 export const selectHasRegistered = createSelector(
   schema.user.select,
