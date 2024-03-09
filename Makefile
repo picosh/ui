@@ -12,6 +12,7 @@ fmt:
 
 lint:
 	npx @biomejs/biome ci .
+	tsc --noEmit
 .PHONY: lint
 
 test: lint
