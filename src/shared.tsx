@@ -264,11 +264,14 @@ export function UserBox() {
   const user = useSelector(schema.user.select);
   return (
     <div className="box">
+      <div className="font-bold">pubkey</div>
       <div>
-        <span className="font-bold">pubkey:</span> {user.pubkey}
+        <code>{user.pubkey}</code>
       </div>
+
+      <div className="font-bold">username</div>
       <div>
-        <span className="font-bold">username:</span> {user.username}
+        <code>{user.username}</code>
       </div>
     </div>
   );
