@@ -103,7 +103,7 @@ export const selectFeatureByName = createSelector(
   (features, name) => features.find((ff) => ff.name === name),
 );
 
-export const fetchUser = api.get<never, User>("/pico", [
+export const fetchUser = api.get<never, User>("/current_user", [
   function* (ctx, next) {
     yield* next();
     if (!ctx.json.ok) {
