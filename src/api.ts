@@ -21,7 +21,7 @@ export const [schema, initialState] = createSchema({
   cache: slice.table(),
   loaders: slice.loaders(),
   config: slice.obj({
-    mockApi: import.meta.env.VITE_MOCK_API || false,
+    mockApi: import.meta.env.VITE_MOCK_API || "false",
     apiUrl: import.meta.env.VITE_API_URL || `${location.origin}/api`,
   }),
   user: slice.obj({
@@ -96,7 +96,7 @@ api.use(mdw.fetch());
 function mockMdw(data: any, status = 200) {
   return function* (ctx: ApiCtx, next: Next) {
     const config = yield* select(schema.config.select);
-    if (config.mockApi) {
+    if (config.mockApi === "true") {
       ctx.response = new Response(JSON.stringify(data), { status });
     }
 
