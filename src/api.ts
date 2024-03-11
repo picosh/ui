@@ -7,22 +7,10 @@ import {
   createThunks,
   mdw,
   put,
+  select,
   slice,
 } from "starfx";
 import { TypedUseSelectorHook, useSelector as useSel } from "starfx/react";
-
-function mockMdw(data: any, status = 200) {
-  return function* (ctx: ApiCtx, next: Next) {
-    const isDev = import.meta.env.DEV;
-    if (isDev) {
-      yield* next();
-      return;
-    }
-
-    ctx.response = new Response(JSON.stringify(data), { status });
-    yield* next();
-  };
-}
 
 const unknown = "unknown";
 const now = new Date().toISOString();
@@ -32,6 +20,10 @@ const year = new Date(
 export const [schema, initialState] = createSchema({
   cache: slice.table(),
   loaders: slice.loaders(),
+  config: slice.obj({
+    mockApi: import.meta.env.VITE_MOCK_API || false,
+    apiUrl: import.meta.env.VITE_API_URL || `${location.origin}/api`,
+  }),
   user: slice.obj({
     id: "",
     name: unknown,
@@ -91,8 +83,26 @@ api.use(function* (ctx, next) {
   });
   yield* next();
 });
-// api.use(mdw.fetch({ baseUrl: `${location.origin}/api` }));
-api.use(mdw.fetch({ baseUrl: "http://kings.erock.io:1337/api" }));
+api.use(function* (ctx, next) {
+  const config = yield* select(schema.config.select);
+  ctx.request = ctx.req({
+    url: `${config.apiUrl}${ctx.req().url}`,
+  });
+  yield* next();
+});
+api.use(mdw.fetch());
+// api.use(mdw.fetch({ baseUrl: "http://kings.erock.io:1337/api" }));
+
+function mockMdw(data: any, status = 200) {
+  return function* (ctx: ApiCtx, next: Next) {
+    const config = yield* select(schema.config.select);
+    if (config.mockApi) {
+      ctx.response = new Response(JSON.stringify(data), { status });
+    }
+
+    yield* next();
+  };
+}
 
 export const selectHasRegistered = createSelector(
   schema.user.select,
@@ -115,7 +125,7 @@ export const fetchUser = api.get<never, User>("/current_user", [
     yield* schema.update(schema.user.set(ctx.json.value));
   },
   mockMdw({}, 404),
-  // mockMdw({ user_id: "123", username: "erock", pubkey: "whatever" })
+  // mockMdw({ id: "123", name: "erock", fingerprint: "whatever" } as User)
 ]);
 
 export const registerUser = api.post<{ name: string }, User>("/users", [
@@ -133,10 +143,10 @@ export const registerUser = api.post<{ name: string }, User>("/users", [
   },
   function* (ctx, next) {
     const mock = mockMdw({
-      user_id: "123",
-      username: ctx.payload.name,
-      pubkey: "whatever",
-    });
+      id: "123",
+      name: ctx.payload.name,
+      fingerprint: "whatever",
+    } as User);
     yield* mock(ctx, next);
   },
 ]);
@@ -173,7 +183,7 @@ export const fetchFeatures = api.get<never, { features: FeatureFlag[] }>(
             file_max: 50_000_000,
           },
         },
-      ],
+      ] as Feature[],
     }),
     */
   ],
@@ -214,7 +224,7 @@ export const fetchPubkeys = api.get<never, { pubkeys: Pubkey[] }>("/pubkeys", [
     yield* schema.update(schema.pubkeys.set(pubkeys));
   },
   mockMdw({
-    pubkeys: [{ id: "1111", key: "xxx", created_at: now }],
+    pubkeys: [{ id: "1111", key: "xxx", created_at: now }] as Pubkey[],
   }),
 ]);
 
@@ -235,6 +245,8 @@ export const fetchTokens = api.get<never, { tokens: Token[] }>("/tokens", [
     yield* schema.update(schema.tokens.set(tokens));
   },
   mockMdw({
-    tokens: [{ id: "2222", name: "chat", created_at: now, expires_at: year }],
+    tokens: [
+      { id: "2222", name: "chat", created_at: now, expires_at: year },
+    ] as Token[],
   }),
 ]);

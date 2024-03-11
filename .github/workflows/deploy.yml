@@ -12,6 +12,8 @@ jobs:
           # need entire history
           fetch-depth: 0
       - name: Build site
+        env:
+          VITE_MOCK_API: false
         run: |
           make install
           make build
