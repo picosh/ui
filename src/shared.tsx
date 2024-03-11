@@ -8,6 +8,7 @@ import {
   schema,
   selectFeatureByName,
   selectHasRegistered,
+  selectPostsBySpace,
   useSelector,
 } from "./api";
 
@@ -288,6 +289,45 @@ export function TokensTable() {
               </td>
               <td className="text-left">
                 {new Date(token.expires_at).toDateString()}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+
+export function PostsTable({ space }: { space: string }) {
+  const posts = useSelector((s) => selectPostsBySpace(s, { space }));
+  return (
+    <table className="w-full box overflow-x-scroll">
+      <thead>
+        <tr>
+          <th className="text-left">Title</th>
+          <th className="text-left">Filename</th>
+          <th className="text-center">Status</th>
+          <th className="text-left">Published At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {posts.length === 0 ? (
+          <tr>
+            <td colSpan={4} className="text-center">
+              No posts!
+            </td>
+          </tr>
+        ) : null}
+        {posts.map((post) => {
+          return (
+            <tr key={post.id}>
+              <td className="text-left">{post.title}</td>
+              <td className="text-left">{post.filename}</td>
+              <td className="text-center">
+                {post.hidden ? "Unlisted" : "Listed"}
+              </td>
+              <td className="text-left">
+                {new Date(post.publish_at).toDateString()}
               </td>
             </tr>
           );

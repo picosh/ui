@@ -34,7 +34,9 @@ export const [schema, initialState] = createSchema({
   tokens: slice.table({
     empty: { id: "", name: unknown, created_at: now, expires_at: year },
   }),
-  pubkeys: slice.table({ empty: { id: "", key: "", created_at: now } }),
+  pubkeys: slice.table({
+    empty: { id: "", name: unknown, key: "", created_at: now },
+  }),
   features: slice.table({
     empty: {
       id: "",
@@ -44,12 +46,45 @@ export const [schema, initialState] = createSchema({
       data: { storage_max: 0, file_max: 0 },
     },
   }),
+  posts: slice.table({
+    empty: {
+      id: "",
+      title: "",
+      text: "",
+      publish_at: now,
+      created_at: now,
+      updated_at: now,
+      expires_at: now,
+      description: "",
+      filename: "",
+      hidden: false,
+      space: "",
+      views: 0,
+      slug: "",
+      file_size: 0,
+      mime_type: "",
+      shasum: "",
+      data: {},
+    },
+  }),
+  projects: slice.table({
+    empty: {
+      id: "",
+      name: unknown,
+      project_dir: "",
+      created_at: now,
+      updated_at: now,
+      acl: { data: [], type: "" },
+    },
+  }),
 });
 export type WebState = typeof initialState;
 export type User = WebState["user"];
 export type Token = WebState["tokens"][string];
 export type Pubkey = WebState["pubkeys"][string];
 export type FeatureFlag = WebState["features"][string];
+export type Post = WebState["posts"][string];
+export type Project = WebState["projects"][string];
 
 export const useSelector: TypedUseSelectorHook<WebState> = useSel;
 
@@ -91,7 +126,6 @@ api.use(function* (ctx, next) {
   yield* next();
 });
 api.use(mdw.fetch());
-// api.use(mdw.fetch({ baseUrl: "http://kings.erock.io:1337/api" }));
 
 function mockMdw(data: any, status = 200) {
   return function* (ctx: ApiCtx, next: Next) {
@@ -113,6 +147,22 @@ export const selectFeatureByName = createSelector(
   schema.features.selectTableAsList,
   (_: WebState, p: { name: string }) => p.name,
   (features, name) => features.find((ff) => ff.name === name),
+);
+
+export const selectPostsBySpace = createSelector(
+  schema.posts.selectTableAsList,
+  (_: WebState, p: { space: string }) => p.space,
+  (posts, space) => posts.filter((post) => post.space === space),
+);
+
+export const selectProjectsAsList = createSelector(
+  schema.projects.selectTableAsList,
+  (projects) =>
+    [...projects].sort((a, b) => {
+      const aDate = new Date(a.updated_at);
+      const bDate = new Date(b.updated_at);
+      return bDate.getTime() - aDate.getTime();
+    }),
 );
 
 export const fetchUser = api.get<never, User>("/current_user", [
@@ -250,3 +300,41 @@ export const fetchTokens = api.get<never, { tokens: Token[] }>("/tokens", [
     ] as Token[],
   }),
 ]);
+
+export const fetchProjects = api.get<never, { projects: Project[] }>(
+  "/projects",
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    const projects = ctx.json.value.projects.reduce<Record<string, Project>>(
+      (acc, pk) => {
+        acc[pk.id] = pk;
+        return acc;
+      },
+      {},
+    );
+    yield* schema.update(schema.projects.set(projects));
+  },
+);
+
+export const fetchPosts = api.get<{ space: string }, { posts: Post[] }>(
+  "/posts/:space",
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    const posts = ctx.json.value.posts.reduce<Record<string, Post>>(
+      (acc, pk) => {
+        acc[pk.id] = { ...pk, space: ctx.payload.space };
+        return acc;
+      },
+      {},
+    );
+    yield* schema.update(schema.posts.add(posts));
+  },
+);

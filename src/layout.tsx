@@ -1,6 +1,7 @@
 import { NavLink as NLink, Outlet } from "react-router-dom";
 import { schema, selectHasRegistered, useSelector } from "./api.ts";
 import {
+  feedsUrl,
   homeUrl,
   imgsUrl,
   pastesUrl,
@@ -35,6 +36,7 @@ export function Nav() {
       <NavLink to={imgsUrl()}>imgs</NavLink>
       <NavLink to={proseUrl()}>prose</NavLink>
       <NavLink to={pastesUrl()}>pastes</NavLink>
+      <NavLink to={feedsUrl()}>feeds</NavLink>
       <NavLink to={settingsUrl()}>{user.name}</NavLink>
     </nav>
   );

@@ -8,3 +8,4 @@ export * from "./prose.tsx";
 export * from "./settings.tsx";
 export * from "./success.tsx";
 export * from "./tunnels.tsx";
+export * from "./feeds.tsx";

@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { AuthRequired } from "./auth.tsx";
 import { Layout } from "./layout.tsx";
 import {
+  FeedsPage,
   HomePage,
   ImgsPage,
   PastesPage,
@@ -33,6 +34,9 @@ export const imgsUrl = () => IMGS_PATH;
 
 const PASTES_PATH = "/pastes";
 export const pastesUrl = () => PASTES_PATH;
+
+const FEEDS_PATH = "/feeds";
+export const feedsUrl = () => FEEDS_PATH;
 
 const PGS_PATH = "/pgs";
 export const pgsUrl = () => PGS_PATH;
@@ -73,6 +77,10 @@ export const router = createBrowserRouter([
       {
         path: PASTES_PATH,
         element: <PastesPage />,
+      },
+      {
+        path: FEEDS_PATH,
+        element: <FeedsPage />,
       },
       {
         path: PGS_PATH,
