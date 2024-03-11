@@ -14,7 +14,7 @@ import { TypedUseSelectorHook, useSelector as useSel } from "starfx/react";
 function mockMdw(data: any, status = 200) {
   return function* (ctx: ApiCtx, next: Next) {
     const isDev = import.meta.env.DEV;
-    if (!isDev) {
+    if (isDev) {
       yield* next();
       return;
     }
@@ -33,9 +33,10 @@ export const [schema, initialState] = createSchema({
   cache: slice.table(),
   loaders: slice.loaders(),
   user: slice.obj({
-    user_id: "",
-    username: unknown,
-    pubkey: "SHA256:GpgLu/REpFbhrJrqzLDfnms5fKfCODbHo17Q1ZO/lLo",
+    id: "",
+    name: unknown,
+    fingerprint: "SHA256:GpgLu/REpFbhrJrqzLDfnms5fKfCODbHo17Q1ZO/lLo",
+    created_at: now,
   }),
   rssToken: slice.str(),
   tokens: slice.table({
@@ -90,12 +91,12 @@ api.use(function* (ctx, next) {
   });
   yield* next();
 });
-api.use(mdw.fetch({ baseUrl: `${location.origin}/api` }));
-// api.use(mdw.fetch({ baseUrl: "http://localhost:5000/api" }));
+// api.use(mdw.fetch({ baseUrl: `${location.origin}/api` }));
+api.use(mdw.fetch({ baseUrl: "http://kings.erock.io:1337/api" }));
 
 export const selectHasRegistered = createSelector(
   schema.user.select,
-  (user) => user.user_id !== "",
+  (user) => user.id !== "",
 );
 
 export const selectFeatureByName = createSelector(

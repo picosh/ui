@@ -57,7 +57,11 @@ export function Button({
 }
 
 export const PubkeyView = ({ pubkey }: { pubkey: string }) => {
-  return <code className="text-xs">{pubkey}</code>;
+  return (
+    <div className="text-xs pill" title={pubkey}>
+      {pubkey}
+    </div>
+  );
 };
 
 export const RssBox = ({ showTitle = true }: { showTitle?: boolean }) => {
@@ -119,7 +123,7 @@ export function SignupForm({ onSuccess }: { onSuccess: () => void }) {
       <div className="font-bold">pubkey</div>
 
       <div>
-        <PubkeyView pubkey={user.pubkey} />
+        <PubkeyView pubkey={user.fingerprint} />
       </div>
 
       <label htmlFor="name">username</label>
@@ -173,7 +177,7 @@ export function PlusBox() {
 export function FeaturesTable() {
   const features = useSelector(schema.features.selectTableAsList);
   return (
-    <table className="w-full box">
+    <table className="w-full box overflow-x-scroll">
       <thead>
         <tr>
           <th className="text-left">Feature</th>
@@ -186,22 +190,27 @@ export function FeaturesTable() {
         {features.length === 0 ? (
           <tr>
             <td colSpan={4} className="text-center">
-              No features!
+              No features!{" "}
+              <Link to={plusUrl()} className="link-alt-hover">
+                Enable with pico+
+              </Link>
             </td>
           </tr>
         ) : null}
         {features.map((feature) => {
           return (
             <tr key={feature.id}>
-              <td className="text-left">{feature.name}</td>
+              <td className="text-left">
+                <div className="pill">{feature.name}</div>
+              </td>
               <td className="text-left">
                 {new Date(feature.expires_at).toDateString()}
               </td>
               <td className="text-center">
-                {bytesToGb(feature.data.storage_max)}
+                {bytesToGb(feature.data.storage_max).toFixed(2)}
               </td>
               <td className="text-center">
-                {bytesToMb(feature.data.file_max)}
+                {bytesToMb(feature.data.file_max).toFixed(2)}
               </td>
             </tr>
           );
@@ -215,7 +224,7 @@ export function PubkeysTable() {
   const user = useSelector(schema.user.select);
   const pubkeys = useSelector(schema.pubkeys.selectTableAsList);
   return (
-    <table className="w-full box">
+    <table className="w-full box overflow-x-scroll">
       <thead>
         <tr>
           <th className="text-left">Key</th>
@@ -238,7 +247,7 @@ export function PubkeysTable() {
                 <PubkeyView pubkey={pubkey.key} />
               </td>
               <td className="text-center">
-                {pubkey.key === user.pubkey ? "*" : ""}{" "}
+                {pubkey.key === user.fingerprint ? "*" : ""}{" "}
               </td>
               <td className="text-left">
                 {new Date(pubkey.created_at).toDateString()}
@@ -254,7 +263,7 @@ export function PubkeysTable() {
 export function TokensTable() {
   const tokens = useSelector(schema.tokens.selectTableAsList);
   return (
-    <table className="w-full box">
+    <table className="w-full box overflow-x-scroll">
       <thead>
         <tr>
           <th className="text-left">Name</th>
@@ -294,12 +303,12 @@ export function UserBox() {
     <div className="box">
       <div className="font-bold">pubkey</div>
       <div>
-        <PubkeyView pubkey={user.pubkey} />
+        <PubkeyView pubkey={user.fingerprint} />
       </div>
 
       <div className="font-bold">username</div>
       <div>
-        <code>{user.username}</code>
+        <code>{user.name}</code>
       </div>
     </div>
   );

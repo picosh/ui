@@ -35,7 +35,7 @@ export function Nav() {
       <NavLink to={imgsUrl()}>imgs</NavLink>
       <NavLink to={proseUrl()}>prose</NavLink>
       <NavLink to={pastesUrl()}>pastes</NavLink>
-      <NavLink to={settingsUrl()}>{user.username}</NavLink>
+      <NavLink to={settingsUrl()}>{user.name}</NavLink>
     </nav>
   );
 }

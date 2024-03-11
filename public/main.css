@@ -43,6 +43,22 @@ input:focus {
   border: 2px solid var(--hover);
 }
 
+.overflow-x-scroll {
+  overflow-x: scroll;
+}
+
+.pill {
+  /* width: 400px;
+  text-overflow: ellipsis;
+  text-overflow: nowrap;
+  overflow: hidden; */
+  display: inline-block;
+  border-radius: 0.3rem;
+  padding: 0.15rem 0.2rem 0.05rem;
+  background-color: var(--code);
+  border: 1px solid var(--code-border);
+}
+
 @media only screen and (max-width: 600px) {
   .payment-methods {
     flex-direction: column;

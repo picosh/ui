@@ -28,7 +28,7 @@ export function PlusPage() {
             </h3>
             <div className="my-2">
               <a
-                href={`https://buy.stripe.com/6oEaIvaNq7DA4NO9AD?client_reference_id=${user.username}`}
+                href={`https://buy.stripe.com/6oEaIvaNq7DA4NO9AD?client_reference_id=${user.name}`}
                 className="btn-link"
                 target="_blank"
                 rel="noreferrer"
