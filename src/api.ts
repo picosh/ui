@@ -259,7 +259,7 @@ export const fetchFeatures = api.get<never, { features: FeatureFlag[] }>(
   ],
 );
 
-export const fetchOrCreateToken = api.put<never, { token: string }>(
+export const fetchOrCreateToken = api.put<never, { secret: string }>(
   "/rss-token",
   [
     function* (ctx, next) {
@@ -269,7 +269,7 @@ export const fetchOrCreateToken = api.put<never, { token: string }>(
       }
 
       const value = ctx.json.value;
-      yield* schema.update(schema.rssToken.set(value.token));
+      yield* schema.update(schema.rssToken.set(value.secret));
     },
     mockMdw({
       token: "asbcasasd",
