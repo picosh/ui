@@ -14,7 +14,7 @@ export function PlusPage() {
 
       <div className="text-center text-2xl my-4">$20/year</div>
 
-      <div className="group mb-4">
+      <div className="group">
         <div>
           There are a few ways to purchase a membership. We try our best to
           provide immediate access to <code>pico+</code> regardless of payment

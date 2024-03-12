@@ -46,7 +46,7 @@ export function Layout({ children }: { children?: React.ReactNode }) {
   return (
     <div className="container">
       <Nav />
-      <main>{children ? children : <Outlet />}</main>
+      <main className="mb-4">{children ? children : <Outlet />}</main>
     </div>
   );
 }

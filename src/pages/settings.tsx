@@ -14,7 +14,7 @@ export function SettingsPage() {
   useQuery(fetchFeatures());
 
   return (
-    <div className="group mb-4">
+    <div className="group">
       <h2 className="text-xl">Account Info</h2>
       <UserBox />
 

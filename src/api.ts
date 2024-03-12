@@ -152,7 +152,14 @@ export const selectFeatureByName = createSelector(
 export const selectPostsBySpace = createSelector(
   schema.posts.selectTableAsList,
   (_: WebState, p: { space: string }) => p.space,
-  (posts, space) => posts.filter((post) => post.space === space),
+  (posts, space) =>
+    posts
+      .filter((post) => post.space === space)
+      .sort((a, b) => {
+        const aDate = new Date(a.created_at);
+        const bDate = new Date(b.created_at);
+        return bDate.getTime() - aDate.getTime();
+      }),
 );
 
 export const selectProjectsAsList = createSelector(
@@ -164,6 +171,19 @@ export const selectProjectsAsList = createSelector(
       return bDate.getTime() - aDate.getTime();
     }),
 );
+
+export const getPostUrl = (space: string) => (u: User, p: Post) => {
+  return `https://${u.name}.${space}.sh/${p.slug}`;
+};
+export const getProseUrl = getPostUrl("prose");
+export const getPastesUrl = getPostUrl("pastes");
+
+export const getProjectUrl = (u: User, p: Project) => {
+  if (u.name === p.name) {
+    return `https://${u.name}.pgs.sh`;
+  }
+  return `https://${u.name}-${p.name}.pgs.sh`;
+};
 
 export const fetchUser = api.get<never, User>("/current_user", [
   function* (ctx, next) {

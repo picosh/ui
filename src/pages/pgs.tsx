@@ -1,6 +1,8 @@
 import {
   Project,
   fetchProjects,
+  getProjectUrl,
+  schema,
   selectProjectsAsList,
   useSelector,
 } from "@app/api";
@@ -11,6 +13,7 @@ function isProjectLinked(project: Project): boolean {
 }
 
 function ProjectsTable() {
+  const user = useSelector(schema.user.select);
   const projects = useSelector(selectProjectsAsList);
   return (
     <table className="w-full box overflow-x-scroll">
@@ -35,7 +38,9 @@ function ProjectsTable() {
         {projects.map((project) => {
           return (
             <tr key={project.id}>
-              <td className="text-left">{project.name}</td>
+              <td className="text-left">
+                <a href={getProjectUrl(user, project)}>{project.name}</a>
+              </td>
               <td className="text-left">
                 {isProjectLinked(project) ? project.project_dir : null}
               </td>

@@ -43,6 +43,18 @@ input:focus {
   border: 2px solid var(--hover);
 }
 
+table {
+  border-collapse: collapse;
+}
+
+tr {
+  border: 1px solid var(--code);
+}
+
+td, th {
+  padding: 0.5rem;
+}
+
 .overflow-x-scroll {
   overflow-x: scroll;
 }
