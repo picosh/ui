@@ -82,12 +82,16 @@ export function PgsDetailPage() {
       <table>
         <thead>
           <tr>
-            <th onClick={() => sorter("name")} onKeyUp={() => sorter("name")}>
+            <th
+              onClick={() => sorter("name")}
+              onKeyUp={() => sorter("name")}
+              className="cursor-pointer"
+            >
               Prefix
             </th>
             <th className="text-center">Object</th>
             <th
-              className="text-center"
+              className="text-center cursor-pointer"
               onClick={() => sorter("size")}
               onKeyUp={() => sorter("size")}
             >
