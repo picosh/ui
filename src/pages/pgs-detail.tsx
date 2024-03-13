@@ -1,6 +1,8 @@
 import {
+  ProjectObject,
   fetchProjectObjects,
   getProjectUrl,
+  objectSort,
   schema,
   selectObjectsByProjectName,
   useSelector,
@@ -8,6 +10,7 @@ import {
 import { usePaginate } from "@app/paginate";
 import { pgsUrl } from "@app/router";
 import { Button } from "@app/shared";
+import { useState } from "react";
 import { useParams } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "starfx/react";
@@ -16,21 +19,41 @@ export function PgsDetailPage() {
   const { name = "" } = useParams();
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
+  const [sortDir, setSortDir] = useState("asc");
+  const [sortBy, setSortBy] = useState("name" as keyof ProjectObject);
   const user = useSelector(schema.user.select);
   const url = getProjectUrl(user, { name });
   useQuery(fetchProjectObjects({ name }));
-  const objects = useSelector((s) =>
-    selectObjectsByProjectName(s, { name }),
-  ).filter((obj) => {
-    if (search === "") {
-      return true;
-    }
-    return obj.name
-      .replace("/", "")
-      .toLocaleLowerCase()
-      .includes(search.toLocaleLowerCase());
-  });
+  const objects = useSelector((s) => selectObjectsByProjectName(s, { name }))
+    .filter((obj) => {
+      if (search === "") {
+        return true;
+      }
+      return obj.name
+        .replace("/", "")
+        .toLocaleLowerCase()
+        .includes(search.toLocaleLowerCase());
+    })
+    .sort((a, b) => {
+      if (sortBy === "size") {
+        if (sortDir === "asc") {
+          return a.size - b.size;
+        }
+        return b.size - a.size;
+      }
+
+      if (sortDir === "desc") {
+        return objectSort(b, a);
+      }
+
+      return objectSort(a, b);
+    });
   const paginate = usePaginate(objects);
+  const sorter = (by: keyof ProjectObject) => {
+    paginate.setPage(1);
+    setSortDir(sortDir === "asc" ? "desc" : "asc");
+    setSortBy(by);
+  };
   return (
     <div className="group">
       <h2 className="text-xl">
@@ -59,8 +82,17 @@ export function PgsDetailPage() {
       <table>
         <thead>
           <tr>
-            <th>Prefix</th>
+            <th onClick={() => sorter("name")} onKeyUp={() => sorter("name")}>
+              Prefix
+            </th>
             <th className="text-center">Object</th>
+            <th
+              className="text-center"
+              onClick={() => sorter("size")}
+              onKeyUp={() => sorter("size")}
+            >
+              Size
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -87,6 +119,7 @@ export function PgsDetailPage() {
                     {filename}
                   </a>
                 </td>
+                <td className="text-center">{obj.size}</td>
               </tr>
             );
           })}

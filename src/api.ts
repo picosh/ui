@@ -189,24 +189,26 @@ export const selectProjectUrl = createSelector(
   },
 );
 
+export const objectSort = (a: ProjectObject, b: ProjectObject) => {
+  const aDir = a.name.includes("/");
+  const bDir = b.name.includes("/");
+  if (aDir && bDir) {
+    return a.name.localeCompare(b.name);
+  }
+  if (!aDir && !bDir) {
+    return a.name.localeCompare(b.name);
+  }
+  if (aDir) return 1;
+  return -1;
+};
+
 export const selectObjectsByProjectName = createSelector(
   schema.objects.selectTableAsList,
   (_: WebState, p: { name: string }) => p.name,
   (objects, projectName) => {
     return objects
       .filter((obj) => obj.id.startsWith(projectName))
-      .sort((a, b) => {
-        const aDir = a.name.includes("/");
-        const bDir = b.name.includes("/");
-        if (aDir && bDir) {
-          return a.name.localeCompare(b.name);
-        }
-        if (!aDir && !bDir) {
-          return a.name.localeCompare(b.name);
-        }
-        if (aDir) return 1;
-        return -1;
-      });
+      .sort(objectSort);
   },
 );
 
