@@ -6,6 +6,7 @@ import {
   HomePage,
   ImgsPage,
   PastesPage,
+  PgsDetailPage,
   PgsPage,
   PlusPage,
   ProsePage,
@@ -40,6 +41,9 @@ export const feedsUrl = () => FEEDS_PATH;
 
 const PGS_PATH = "/pgs";
 export const pgsUrl = () => PGS_PATH;
+
+const PGS_DETAIL_PATH = "/pgs/:name";
+export const pgsDetailUrl = (name: string) => `/pgs/${name}`;
 
 const PROSE_PATH = "/prose";
 export const proseUrl = () => PROSE_PATH;
@@ -85,6 +89,10 @@ export const router = createBrowserRouter([
       {
         path: PGS_PATH,
         element: <PgsPage />,
+      },
+      {
+        path: PGS_DETAIL_PATH,
+        element: <PgsDetailPage />,
       },
       {
         path: PROSE_PATH,

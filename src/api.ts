@@ -77,6 +77,14 @@ export const [schema, initialState] = createSchema({
       acl: { data: [], type: "" },
     },
   }),
+  objects: slice.table({
+    empty: {
+      id: "",
+      name: "",
+      size: 0,
+      mod_time: now,
+    },
+  }),
 });
 export type WebState = typeof initialState;
 export type User = WebState["user"];
@@ -85,6 +93,7 @@ export type Pubkey = WebState["pubkeys"][string];
 export type FeatureFlag = WebState["features"][string];
 export type Post = WebState["posts"][string];
 export type Project = WebState["projects"][string];
+export type ProjectObject = WebState["objects"][string];
 
 export const useSelector: TypedUseSelectorHook<WebState> = useSel;
 
@@ -172,13 +181,83 @@ export const selectProjectsAsList = createSelector(
     }),
 );
 
+export const selectProjectUrl = createSelector(
+  schema.user.select,
+  schema.projects.selectById,
+  (user, project) => {
+    return getProjectUrl(user, project);
+  },
+);
+
+export const selectObjectsByProjectName = createSelector(
+  schema.objects.selectTableAsList,
+  (_: WebState, p: { name: string }) => p.name,
+  (objects, projectName) => {
+    return objects
+      .filter((obj) => obj.id.startsWith(projectName))
+      .sort((a, b) => {
+        const aDir = a.name.includes("/");
+        const bDir = b.name.includes("/");
+        if (aDir && bDir) {
+          return a.name.localeCompare(b.name);
+        }
+        if (!aDir && !bDir) {
+          return a.name.localeCompare(b.name);
+        }
+        if (aDir) return 1;
+        return -1;
+      });
+  },
+);
+
+/* interface Tree {
+  name: string;
+  isDir: boolean;
+  children: Tree[];
+}
+
+export const selectProjectTree = createSelector(
+  selectObjectsByProjectName,
+  (objects) => {
+    const map: { [key: string]: string[] } = {};
+    for (const obj of objects) {
+      const parts = obj.name.split("/");
+      const filename = parts.pop();
+      const dir = "/" + parts.join("/") || "/";
+      if (!map[dir]) {
+        map[dir] = [];
+      }
+      if (filename) {
+        map[dir].push(filename);
+      }
+    }
+
+    const zz = {};
+    const already = new Set<string>();
+    while (Object.keys(map).length > 0) {
+      Object.keys(map).forEach((key) => {
+        const parts = key.split("/");
+        const first = parts.shift() || "";
+        if (already.has(first)) {
+          return;
+        }
+        already.add(first);
+      })
+    }
+    return map;
+  },
+); */
+
 export const getPostUrl = (space: string) => (u: User, p: Post) => {
   return `https://${u.name}.${space}.sh/${p.slug}`;
 };
 export const getProseUrl = getPostUrl("prose");
 export const getPastesUrl = getPostUrl("pastes");
 
-export const getProjectUrl = (u: User, p: Project) => {
+export const getProjectUrl = (
+  u: Pick<User, "name">,
+  p: Pick<Project, "name">,
+) => {
   if (u.name === p.name) {
     return `https://${u.name}.pgs.sh`;
   }
@@ -358,3 +437,22 @@ export const fetchPosts = api.get<{ space: string }, { posts: Post[] }>(
     yield* schema.update(schema.posts.add(posts));
   },
 );
+
+export const fetchProjectObjects = api.get<
+  { name: string },
+  { objects: ProjectObject[] }
+>("/projects/:name", function* (ctx, next) {
+  yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const objects = ctx.json.value.objects.reduce<Record<string, ProjectObject>>(
+    (acc, pk) => {
+      acc[pk.id] = pk;
+      return acc;
+    },
+    {},
+  );
+  yield* schema.update(schema.objects.add(objects));
+});

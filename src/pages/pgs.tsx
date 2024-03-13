@@ -6,6 +6,8 @@ import {
   selectProjectsAsList,
   useSelector,
 } from "@app/api";
+import { pgsDetailUrl } from "@app/router";
+import { Link } from "react-router-dom";
 import { useQuery } from "starfx/react";
 
 function isProjectLinked(project: Project): boolean {
@@ -20,6 +22,7 @@ function ProjectsTable() {
       <thead>
         <tr>
           <th className="text-left">Name</th>
+          <th className="text-left">Site</th>
           <th className="text-left">Links To</th>
           <th className="text-left">Created At</th>
           <th className="text-left">Updated At</th>
@@ -39,7 +42,18 @@ function ProjectsTable() {
           return (
             <tr key={project.id}>
               <td className="text-left">
-                <a href={getProjectUrl(user, project)}>{project.name}</a>
+                <Link to={pgsDetailUrl(project.project_dir)}>
+                  {project.name}
+                </Link>
+              </td>
+              <td className="text-left">
+                <a
+                  href={getProjectUrl(user, project)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Site
+                </a>
               </td>
               <td className="text-left">
                 {isProjectLinked(project) ? project.project_dir : null}
