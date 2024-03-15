@@ -12,7 +12,7 @@ Then open your browser and navigate to [localhost:1337](http://localhost:1337).
 
 # imgs
 
-If you want to view your docker repositories on [imgs.sh](https://pico/imgs.sh)
+If you want to view your docker repositories on [imgs.sh](https://pico/imgs)
 then you need to open an additional SSH tunnel:
 
 ```bash
