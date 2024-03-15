@@ -12,6 +12,11 @@ import {
 } from "starfx";
 import { TypedUseSelectorHook, useSelector as useSel } from "starfx/react";
 
+interface AclData {
+  data: null | string[];
+  type: string;
+}
+
 const unknown = "unknown";
 const now = new Date().toISOString();
 const year = new Date(
@@ -77,7 +82,7 @@ export const [schema, initialState] = createSchema({
       project_dir: "",
       created_at: now,
       updated_at: now,
-      acl: { data: [], type: "" },
+      acl: { data: [], type: "" } as AclData,
     },
   }),
   objects: slice.table({

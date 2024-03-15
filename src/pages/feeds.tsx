@@ -5,6 +5,7 @@ function FeedsTable() {
   const posts = useSelector((s) => selectPostsBySpace(s, { space: "feeds" }));
   return (
     <div className="group">
+      {posts.length === 0 ? <div>No feeds found!</div> : null}
       {posts.map((post) => {
         return (
           <div key={post.id} className="box group">

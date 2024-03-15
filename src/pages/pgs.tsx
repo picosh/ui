@@ -39,6 +39,7 @@ function ProjectsTable() {
           </tr>
         ) : null}
         {projects.map((project) => {
+          const { type, data = [] } = project.acl;
           return (
             <tr key={project.id}>
               <td className="text-left">
@@ -64,8 +65,8 @@ function ProjectsTable() {
               <td className="text-left">
                 {new Date(project.updated_at).toDateString()}
               </td>
-              <td className="text-center">{project.acl.type}</td>
-              <td className="text-left">{project.acl.data.join(", ")}</td>
+              <td className="text-center">{type}</td>
+              <td className="text-left">{data?.join(", ")}</td>
             </tr>
           );
         })}
