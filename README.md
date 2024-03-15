@@ -1,4 +1,4 @@
-This is an experimental web-based UI leverage [web tunnels](https://pico.sh/tunnels).
+This is an experimental web-based UI leveraging [web tunnels](https://pico.sh/tunnels).
 
 To use the web UI, create an SSH local forward connection to our
 [pgs](https://pico.sh/pgs)
