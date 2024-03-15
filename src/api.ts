@@ -247,19 +247,17 @@ export const getProjectUrl = (
 
 const deserializeUser = (data: UserResp): User => {
   return {
-    id: data.user?.id || "",
-    created_at: data.user?.created_at || now,
-    name: data.user?.name || unknown,
+    id: data.id || "",
+    created_at: data.created_at || now,
+    name: data.name || unknown,
     fingerprint: data.fingerprint,
   };
 };
 
 interface UserResp {
-  user: {
-    id: string;
-    name: string;
-    created_at: string;
-  } | null;
+  id?: string;
+  name?: string;
+  created_at?: string;
   fingerprint: string;
 }
 

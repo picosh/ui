@@ -118,7 +118,25 @@ export function SignupForm({ onSuccess }: { onSuccess: () => void }) {
     onSuccess();
   });
 
-  if (hasRegistered) return null;
+  if (hasRegistered) {
+    return (
+      <div className="group">
+        <div>
+          <div className="font-bold">pubkey</div>
+          <div>
+            <PubkeyView pubkey={user.fingerprint} />
+          </div>
+        </div>
+
+        <div>
+          <div className="font-bold">user</div>
+          <div>
+            <code>{user.name}</code>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={onSubmit} className="group">
