@@ -164,7 +164,9 @@ function mockMdw(data: any, status = 200) {
 
 export const selectHasRegistered = createSelector(
   schema.user.select,
-  (user) => user.id !== "",
+  (user) => {
+    return user.id !== "";
+  },
 );
 
 export const selectFeatureByName = createSelector(
@@ -227,44 +229,6 @@ export const selectObjectsByProjectName = createSelector(
   },
 );
 
-/* interface Tree {
-  name: string;
-  isDir: boolean;
-  children: Tree[];
-}
-
-export const selectProjectTree = createSelector(
-  selectObjectsByProjectName,
-  (objects) => {
-    const map: { [key: string]: string[] } = {};
-    for (const obj of objects) {
-      const parts = obj.name.split("/");
-      const filename = parts.pop();
-      const dir = "/" + parts.join("/") || "/";
-      if (!map[dir]) {
-        map[dir] = [];
-      }
-      if (filename) {
-        map[dir].push(filename);
-      }
-    }
-
-    const zz = {};
-    const already = new Set<string>();
-    while (Object.keys(map).length > 0) {
-      Object.keys(map).forEach((key) => {
-        const parts = key.split("/");
-        const first = parts.shift() || "";
-        if (already.has(first)) {
-          return;
-        }
-        already.add(first);
-      })
-    }
-    return map;
-  },
-); */
-
 export const getPostUrl = (space: string) => (u: User, p: Post) => {
   return `https://${u.name}.${space}.sh/${p.slug}`;
 };
@@ -281,14 +245,33 @@ export const getProjectUrl = (
   return `https://${u.name}-${p.name}.pgs.sh`;
 };
 
-export const fetchUser = api.get<never, User>("/current_user", [
+const deserializeUser = (data: UserResp): User => {
+  return {
+    id: data.user?.id || "",
+    created_at: data.user?.created_at || now,
+    name: data.user?.name || unknown,
+    fingerprint: data.fingerprint,
+  };
+};
+
+interface UserResp {
+  user: {
+    id: string;
+    name: string;
+    created_at: string;
+  } | null;
+  fingerprint: string;
+}
+
+export const fetchUser = api.get<never, UserResp>("/current_user", [
   function* (ctx, next) {
     yield* next();
     if (!ctx.json.ok) {
       return;
     }
 
-    yield* schema.update(schema.user.set(ctx.json.value));
+    const data = ctx.json.value;
+    yield* schema.update(schema.user.set(deserializeUser(data)));
   },
   mockMdw({}, 404),
   // mockMdw({ id: "123", name: "erock", fingerprint: "whatever" } as User)

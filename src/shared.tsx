@@ -105,6 +105,7 @@ export const RssBox = ({ showTitle = true }: { showTitle?: boolean }) => {
 
 export function SignupForm({ onSuccess }: { onSuccess: () => void }) {
   const hasRegistered = useSelector(selectHasRegistered);
+  console.log(hasRegistered);
   const [name, setName] = useState("");
   const loader = useApi(registerUser({ name }));
   const user = useSelector(schema.user.select);
