@@ -4,6 +4,7 @@ import { RouterProvider } from "react-router-dom";
 import { Operation, createStore, parallel, put, takeEvery } from "starfx";
 import { Provider } from "starfx/react";
 import { api, bootup, initialState, schema, thunks } from "./api.ts";
+import { docker } from "./docker.ts";
 import { router } from "./router.tsx";
 
 init();
@@ -23,6 +24,7 @@ function init() {
       }),
       api.bootup,
       thunks.bootup,
+      docker.bootup,
     ]);
     yield* put(bootup());
     yield* group;
