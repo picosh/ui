@@ -4,6 +4,7 @@ import { Layout } from "./layout.tsx";
 import {
   FeedsPage,
   HomePage,
+  ImgsDetailPage,
   ImgsPage,
   PastesPage,
   PgsDetailPage,
@@ -32,6 +33,9 @@ export const plusUrl = () => PLUS_PATH;
 
 const IMGS_PATH = "/imgs";
 export const imgsUrl = () => IMGS_PATH;
+
+const IMGS_DETAIL_PATH = "/imgs/:name";
+export const imgsDetailUrl = (repo: string) => `/imgs/${repo}`;
 
 const PASTES_PATH = "/pastes";
 export const pastesUrl = () => PASTES_PATH;
@@ -77,6 +81,10 @@ export const router = createBrowserRouter([
       {
         path: IMGS_PATH,
         element: <ImgsPage />,
+      },
+      {
+        path: IMGS_DETAIL_PATH,
+        element: <ImgsDetailPage />,
       },
       {
         path: PASTES_PATH,

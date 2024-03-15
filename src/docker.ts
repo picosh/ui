@@ -35,7 +35,7 @@ export const fetchImageRepos = docker.get<never, { repositories: string[] }>(
 
     const repos = ctx.json.value.repositories.reduce<Record<string, ImageRepo>>(
       (acc, repo) => {
-        acc[repo] = { id: repo };
+        acc[repo] = { id: repo, tags: [] };
         return acc;
       },
       {},
@@ -43,3 +43,20 @@ export const fetchImageRepos = docker.get<never, { repositories: string[] }>(
     yield* schema.update(schema.imageRepos.set(repos));
   },
 );
+
+export const fetchImageTags = docker.get<
+  { name: string },
+  { name: string; tags: string[] }
+>("/:name/tags/list", function* (ctx, next) {
+  yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const tags = ctx.json.value.tags;
+  yield* schema.update(
+    schema.imageRepos.patch({
+      [ctx.payload.name]: { id: ctx.payload.name, tags },
+    }),
+  );
+});

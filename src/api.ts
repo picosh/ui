@@ -91,6 +91,7 @@ export const [schema, initialState] = createSchema({
   imageRepos: slice.table({
     empty: {
       id: "",
+      tags: [] as string[],
     },
   }),
 });
@@ -467,3 +468,13 @@ export const fetchProjectObjects = api.get<
   );
   yield* schema.update(schema.objects.add(objects));
 });
+
+export const updateDockerConfig = thunks.create<{ url: string }>(
+  "update-docker-config",
+  function* (ctx, next) {
+    yield* schema.update(
+      schema.config.update({ key: "dockerUrl", value: ctx.payload.url }),
+    );
+    yield* next();
+  },
+);
