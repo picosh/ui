@@ -147,6 +147,15 @@ export function PlusPage() {
           </h3>
 
           <p>
+            Have any questions not covered here?{" "}
+            <a href="mailto:hello@pico.sh">Email</a> us or join{" "}
+            <a href="https://pico.sh/irc" target="_blank" rel="noreferrer">
+              IRC
+            </a>
+            , we will promptly respond.
+          </p>
+
+          <p>
             Unfortunately we do not have the labor bandwidth to support
             international users for <code>pico+</code> at this time. As a
             result, we only offer our premium services to the US and Canada.
