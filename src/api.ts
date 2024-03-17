@@ -122,8 +122,19 @@ thunks.use(mdw.loader(schema));
 thunks.use(thunks.routes());
 
 export const bootup = thunks.create("bootup", function* (_, next) {
-  yield* put(fetchUser());
-  yield* put(fetchFeatures());
+  yield* fetchUser.run();
+  const hasRegistered = yield* select(selectHasRegistered);
+  if (hasRegistered) {
+    yield* put([
+      fetchFeatures(),
+      fetchPosts({ space: "prose" }),
+      fetchPosts({ space: "feeds" }),
+      fetchPosts({ space: "pastes" }),
+      fetchPubkeys(),
+      fetchProjects(),
+      fetchTokens(),
+    ]);
+  }
   yield* next();
 });
 

@@ -12,7 +12,7 @@ export function PlusPage() {
 
       <hr />
 
-      <div className="text-center text-2xl my-4">$20/year</div>
+      <div className="text-center text-2xl my-4">$25/year</div>
 
       <div className="group">
         <div>

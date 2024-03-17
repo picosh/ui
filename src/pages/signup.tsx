@@ -8,7 +8,7 @@ export function SignupPage() {
   const [params] = useSearchParams();
   const redirect = params.get("redirect");
   const onSuccess = () => {
-    if (redirect) {
+    if (redirect && redirect.startsWith("/")) {
       navigate(redirect);
     } else {
       navigate(homeUrl());
