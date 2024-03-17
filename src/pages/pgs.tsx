@@ -33,7 +33,7 @@ function ProjectsTable() {
       <tbody>
         {projects.length === 0 ? (
           <tr>
-            <td colSpan={4} className="text-center">
+            <td colSpan={7} className="text-center">
               No projects!
             </td>
           </tr>

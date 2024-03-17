@@ -16,7 +16,7 @@ const bytesToMb = (num: number) => num / 1000 / 1000;
 const bytesToGb = (num: number) => bytesToMb(num) / 1000;
 
 export function Banner({ children }: { children: React.ReactNode }) {
-  return <div>{children}</div>;
+  return <div className="p-1 border-success">{children}</div>;
 }
 export function BannerLoader({
   isLoading,

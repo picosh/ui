@@ -1,11 +1,13 @@
 import {
   ApiCtx,
   Next,
+  createAction,
   createApi,
   createSchema,
   createSelector,
   createThunks,
   mdw,
+  poll,
   put,
   select,
   slice,
@@ -309,6 +311,14 @@ export const registerUser = api.post<{ name: string }, User>("/users", [
   },
 ]);
 
+function* saveFeatures(features: FeatureFlag[]) {
+  const ff = features.reduce<Record<string, FeatureFlag>>((acc, ff) => {
+    acc[ff.id] = ff;
+    return acc;
+  }, {});
+  yield* schema.update(schema.features.add(ff));
+}
+
 export const fetchFeatures = api.get<never, { features: FeatureFlag[] }>(
   "/features",
   [
@@ -318,14 +328,7 @@ export const fetchFeatures = api.get<never, { features: FeatureFlag[] }>(
         return;
       }
 
-      const ff = ctx.json.value.features.reduce<Record<string, FeatureFlag>>(
-        (acc, ff) => {
-          acc[ff.id] = ff;
-          return acc;
-        },
-        {},
-      );
-      yield* schema.update(schema.features.add(ff));
+      yield* saveFeatures(ctx.json.value.features);
     },
     mockMdw({ features: [] }),
     /*
@@ -345,6 +348,20 @@ export const fetchFeatures = api.get<never, { features: FeatureFlag[] }>(
     }),
     */
   ],
+);
+
+export const cancelPollFeatures = createAction("cancel-features-poller");
+export const pollFeatures = api.get<never, { features: FeatureFlag[] }>(
+  ["/features", "poller"],
+  { supervisor: poll(5 * 1000, cancelPollFeatures.toString()) },
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* saveFeatures(ctx.json.value.features);
+  },
 );
 
 export const fetchOrCreateToken = api.put<never, { secret: string }>(

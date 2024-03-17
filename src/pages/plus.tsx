@@ -1,7 +1,37 @@
-import { schema, useSelector } from "@app/api";
+import {
+  cancelPollFeatures,
+  pollFeatures,
+  schema,
+  selectFeatureByName,
+  useSelector,
+} from "@app/api";
+import { successUrl } from "@app/router";
+import { Banner } from "@app/shared";
+import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useDispatch } from "starfx/react";
+
+const paymentLink = "https://buy.stripe.com/6oEaIvaNq7DA4NO9AD";
 
 export function PlusPage() {
   const user = useSelector(schema.user.select);
+  const feature = useSelector((s) => selectFeatureByName(s, { name: "pgs" }));
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(cancelPollFeatures());
+    dispatch(pollFeatures());
+
+    return () => {
+      dispatch(cancelPollFeatures());
+    };
+  }, []);
+
+  useEffect(() => {
+    if (feature && feature.id !== "") {
+      dispatch(cancelPollFeatures());
+    }
+  }, [feature]);
 
   return (
     <div>
@@ -15,6 +45,51 @@ export function PlusPage() {
       <div className="text-center text-2xl my-4">$25/year</div>
 
       <div className="group">
+        {feature && feature.id !== "" ? (
+          <Banner>
+            <code>pico+</code> membership activated!{" "}
+            <Link to={successUrl()} className="link-alt">
+              Click here to continue
+            </Link>
+          </Banner>
+        ) : null}
+
+        <div className="box group">
+          <h3 className="text-lg">Includes</h3>
+          <ul className="m-0">
+            <li>
+              <a href="https://pico.sh/pgs" target="_blank" rel="noreferrer">
+                pgs.sh
+              </a>{" "}
+              - 10GB asset storage
+            </li>
+            <li>
+              <a href="https://pico.sh/tuns" target="_blank" rel="noreferrer">
+                tuns.sh
+              </a>{" "}
+              - full access
+            </li>
+            <li>
+              <a href="https://pico.sh/imgs" target="_blank" rel="noreferrer">
+                imgs.sh
+              </a>{" "}
+              - 5GB image registry storage
+            </li>
+            <li>
+              <a href="https://pico.sh/prose" target="_blank" rel="noreferrer">
+                prose.sh
+              </a>{" "}
+              - 1GB image storage
+            </li>
+            <li>
+              <a href="https://pico.sh/irc" target="_blank" rel="noreferrer">
+                beta access
+              </a>{" "}
+              - Invited to join our private IRC channel
+            </li>
+          </ul>
+        </div>
+
         <div>
           There are a few ways to purchase a membership. We try our best to
           provide immediate access to <code>pico+</code> regardless of payment
@@ -28,7 +103,7 @@ export function PlusPage() {
             </h3>
             <div className="my-2">
               <a
-                href={`https://buy.stripe.com/6oEaIvaNq7DA4NO9AD?client_reference_id=${user.name}`}
+                href={`${paymentLink}?client_reference_id=${user.name}`}
                 className="btn-link"
                 target="_blank"
                 rel="noreferrer"

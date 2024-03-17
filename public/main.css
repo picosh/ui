@@ -76,6 +76,11 @@ td, th {
   padding-right: 0.5rem;
 }
 
+.border-success {
+  border: 2px solid var(--link-color);
+  color: var(--link-color);
+}
+
 @media only screen and (max-width: 600px) {
   .payment-methods {
     flex-direction: column;

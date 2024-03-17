@@ -4,8 +4,23 @@ export function SuccessPage() {
   return (
     <div className="group">
       <h1 className="text-xl">Thank you for your payment!</h1>
-      <p>Your membership will be activated shortly.</p>
+      <p>
+        Your <code>pico+</code> membership has been activated.
+      </p>
       <RssBox />
+      <div className="group box">
+        <div>Read our docs to start using our services:</div>
+        <div>
+          <a
+            href="https://pico.sh/getting-started#next-steps"
+            className="btn-link"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Getting Started
+          </a>
+        </div>
+      </div>
     </div>
   );
 }
