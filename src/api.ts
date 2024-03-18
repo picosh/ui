@@ -242,6 +242,28 @@ export const selectObjectsByProjectName = createSelector(
   },
 );
 
+export const selectStats = createSelector(
+  schema.projects.selectTableAsList,
+  schema.posts.selectTableAsList,
+  (projects, posts) => {
+    const map: Record<string, number> = {};
+    for (const post of posts) {
+      if (!map[post.space]) {
+        map[post.space] = 1;
+      } else {
+        map[post.space] += 1;
+      }
+    }
+
+    return {
+      projects: projects.length,
+      prose: map.prose,
+      pastes: map.pastes,
+      feeds: map.feeds,
+    };
+  },
+);
+
 export const getPostUrl = (space: string) => (u: User, p: Post) => {
   return `https://${u.name}.${space}.sh/${p.slug}`;
 };

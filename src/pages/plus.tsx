@@ -88,7 +88,7 @@ export function PlusPage() {
           method.
         </div>
 
-        <div className="flex gap payment-methods">
+        <div className="flex gap collapse">
           <div className="box flex-1">
             <h3 className="text-lg" id="stripe">
               Stripe (US/CA Only)

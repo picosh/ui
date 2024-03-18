@@ -100,7 +100,7 @@ td, th {
 }
 
 @media only screen and (max-width: 600px) {
-  .payment-methods {
+  .collapse {
     flex-direction: column;
   }
 }
