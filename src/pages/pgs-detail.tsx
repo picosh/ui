@@ -9,7 +9,7 @@ import {
 } from "@app/api";
 import { usePaginate } from "@app/paginate";
 import { pgsUrl } from "@app/router";
-import { Button } from "@app/shared";
+import { Button, ExternalLink } from "@app/shared";
 import { useState } from "react";
 import { useParams } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
@@ -115,13 +115,9 @@ export function PgsDetailPage() {
                   ))}
                 </td>
                 <td className="text-center">
-                  <a
-                    href={`${url}/${obj.name}`}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
+                  <ExternalLink href={`${url}/${obj.name}`} rel="noreferrer">
                     {filename}
-                  </a>
+                  </ExternalLink>
                 </td>
                 <td className="text-center">{obj.size}</td>
               </tr>

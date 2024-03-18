@@ -28,6 +28,37 @@ export function BannerLoader({
   return <Banner>{message}</Banner>;
 }
 
+interface LinkProps
+  extends React.DetailedHTMLProps<
+    React.AnchorHTMLAttributes<HTMLAnchorElement>,
+    HTMLAnchorElement
+  > {}
+
+export function ExternalLink({ children, href, ...props }: LinkProps) {
+  return (
+    <a href={href} target="_blank" {...props}>
+      {children}
+    </a>
+  );
+}
+
+export function PageHeader({
+  title,
+  docsUrl,
+}: { title: string; docsUrl: string }) {
+  return (
+    <div className="group-h items-center">
+      <h2 className="text-xl p-0">{title}</h2>
+      <ExternalLink
+        href={`https://pico.sh${docsUrl}`}
+        className="btn-link-sm text-sm"
+      >
+        docs
+      </ExternalLink>
+    </div>
+  );
+}
+
 interface ButtonProps
   extends React.DetailedHTMLProps<
     React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -87,7 +118,7 @@ export const RssBox = ({ showTitle = true }: { showTitle?: boolean }) => {
       <pre className="m-0">https://auth.pico.sh/rss/{token}</pre>
 
       <h4 className="text-md m-0">
-        <a href="https://pico.sh/feeds">feeds.sh</a>
+        <ExternalLink href="https://pico.sh/feeds">feeds.sh</ExternalLink>
       </h4>
 
       <div>
@@ -170,8 +201,12 @@ export function SignupForm({ onSuccess }: { onSuccess: () => void }) {
 
       <p>
         By signing up for a pico account you agree to our{" "}
-        <a href="https://pico.sh/ops">terms of service</a> and{" "}
-        <a href="https://pico.sh/privacy">privacy policy</a>.
+        <ExternalLink href="https://pico.sh/ops">terms of service</ExternalLink>{" "}
+        and{" "}
+        <ExternalLink href="https://pico.sh/privacy">
+          privacy policy
+        </ExternalLink>
+        .
       </p>
     </form>
   );

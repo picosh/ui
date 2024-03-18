@@ -1,4 +1,4 @@
-import { RssBox } from "@app/shared";
+import { ExternalLink, RssBox } from "@app/shared";
 
 export function SuccessPage() {
   return (
@@ -11,14 +11,13 @@ export function SuccessPage() {
       <div className="group box">
         <div>Read our docs to start using our services:</div>
         <div>
-          <a
+          <ExternalLink
             href="https://pico.sh/getting-started#next-steps"
             className="btn-link"
-            target="_blank"
             rel="noreferrer"
           >
             Getting Started
-          </a>
+          </ExternalLink>
         </div>
       </div>
     </div>

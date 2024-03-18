@@ -81,6 +81,24 @@ td, th {
   color: var(--link-color);
 }
 
+.btn-link-sm {
+  border: 2px solid var(--link-color);
+  color: var(--link-color);
+  padding: 0 0.25rem;
+  text-decoration: none;
+  font-weight: bold;
+  display: inline-block;
+}
+
+.btn-link-sm:visited {
+  color: var(--link-color);
+}
+
+.btn-link-sm:hover {
+  border: 2px solid var(--hover);
+  color: var(--hover);
+}
+
 @media only screen and (max-width: 600px) {
   .payment-methods {
     flex-direction: column;

@@ -1,7 +1,7 @@
 import { schema, updateDockerConfig, useSelector } from "@app/api";
 import { fetchImageRepos } from "@app/docker";
 import { imgsDetailUrl } from "@app/router";
-import { Button } from "@app/shared";
+import { Button, PageHeader } from "@app/shared";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useQuery } from "starfx/react";
@@ -21,7 +21,7 @@ export function ImgsPage() {
 
   return (
     <div className="group">
-      <h2 className="text-xl">Docker Repositories</h2>
+      <PageHeader title="Docker Images" docsUrl="/imgs" />
 
       <div className="box group">
         <form onSubmit={onSubmit} className="group-h">

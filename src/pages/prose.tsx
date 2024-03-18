@@ -5,6 +5,7 @@ import {
   selectPostsBySpace,
   useSelector,
 } from "@app/api";
+import { PageHeader } from "@app/shared";
 import { useQuery } from "starfx/react";
 
 function ProseTable() {
@@ -55,7 +56,7 @@ export function ProsePage() {
 
   return (
     <div className="group">
-      <h2 className="text-xl">Posts</h2>
+      <PageHeader title="Prose" docsUrl="/prose" />
       <ProseTable />
     </div>
   );

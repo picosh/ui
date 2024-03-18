@@ -6,7 +6,7 @@ import {
   useSelector,
 } from "@app/api";
 import { successUrl } from "@app/router";
-import { Banner } from "@app/shared";
+import { Banner, ExternalLink } from "@app/shared";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "starfx/react";
@@ -58,33 +58,25 @@ export function PlusPage() {
           <h3 className="text-lg">Includes</h3>
           <ul className="m-0">
             <li>
-              <a href="https://pico.sh/pgs" target="_blank" rel="noreferrer">
-                pgs.sh
-              </a>{" "}
-              - 10GB asset storage
+              <ExternalLink href="https://pico.sh/pgs">pgs.sh</ExternalLink> -
+              10GB asset storage
             </li>
             <li>
-              <a href="https://pico.sh/tuns" target="_blank" rel="noreferrer">
-                tuns.sh
-              </a>{" "}
-              - full access
+              <ExternalLink href="https://pico.sh/tuns">tuns.sh</ExternalLink> -
+              full access
             </li>
             <li>
-              <a href="https://pico.sh/imgs" target="_blank" rel="noreferrer">
-                imgs.sh
-              </a>{" "}
-              - 5GB image registry storage
+              <ExternalLink href="https://pico.sh/imgs">imgs.sh</ExternalLink> -
+              5GB image registry storage
             </li>
             <li>
-              <a href="https://pico.sh/prose" target="_blank" rel="noreferrer">
-                prose.sh
-              </a>{" "}
+              <ExternalLink href="https://pico.sh/prose">prose.sh</ExternalLink>{" "}
               - 1GB image storage
             </li>
             <li>
-              <a href="https://pico.sh/irc" target="_blank" rel="noreferrer">
+              <ExternalLink href="https://pico.sh/irc">
                 beta access
-              </a>{" "}
+              </ExternalLink>{" "}
               - Invited to join our private IRC channel
             </li>
           </ul>
@@ -102,14 +94,12 @@ export function PlusPage() {
               Stripe (US/CA Only)
             </h3>
             <div className="my-2">
-              <a
+              <ExternalLink
                 href={`${paymentLink}?client_reference_id=${user.name}`}
                 className="btn-link"
-                target="_blank"
-                rel="noreferrer"
               >
                 JOIN
-              </a>
+              </ExternalLink>
             </div>
             <p>
               This is the quickest way to access <code>pico+</code>. The Stripe
@@ -149,10 +139,8 @@ export function PlusPage() {
           <p>
             Have any questions not covered here?{" "}
             <a href="mailto:hello@pico.sh">Email</a> us or join{" "}
-            <a href="https://pico.sh/irc" target="_blank" rel="noreferrer">
-              IRC
-            </a>
-            , we will promptly respond.
+            <ExternalLink href="https://pico.sh/irc">IRC</ExternalLink>, we will
+            promptly respond.
           </p>
 
           <p>

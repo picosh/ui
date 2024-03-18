@@ -5,6 +5,7 @@ import {
   selectPostsBySpace,
   useSelector,
 } from "@app/api";
+import { PageHeader } from "@app/shared";
 import { useQuery } from "starfx/react";
 
 function PastesTable() {
@@ -52,7 +53,7 @@ export function PastesPage() {
 
   return (
     <div className="group">
-      <h2 className="text-xl">Pastes</h2>
+      <PageHeader title="Pastes" docsUrl="/pastes" />
       <PastesTable />
     </div>
   );

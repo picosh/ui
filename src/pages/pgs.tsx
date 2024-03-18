@@ -7,6 +7,7 @@ import {
   useSelector,
 } from "@app/api";
 import { pgsDetailUrl } from "@app/router";
+import { ExternalLink, PageHeader } from "@app/shared";
 import { Link } from "react-router-dom";
 import { useQuery } from "starfx/react";
 
@@ -48,13 +49,9 @@ function ProjectsTable() {
                 </Link>
               </td>
               <td className="text-left">
-                <a
-                  href={getProjectUrl(user, project)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
+                <ExternalLink href={getProjectUrl(user, project)}>
                   Site
-                </a>
+                </ExternalLink>
               </td>
               <td className="text-left">
                 {isProjectLinked(project) ? project.project_dir : null}
@@ -80,7 +77,7 @@ export function PgsPage() {
 
   return (
     <div className="group">
-      <h2 className="text-xl">Projects</h2>
+      <PageHeader title="Pages" docsUrl="/pgs" />
       <ProjectsTable />
     </div>
   );

@@ -1,4 +1,5 @@
 import { fetchPosts, selectPostsBySpace, useSelector } from "@app/api";
+import { PageHeader } from "@app/shared";
 import { useQuery } from "starfx/react";
 
 function FeedsTable() {
@@ -23,7 +24,7 @@ export function FeedsPage() {
 
   return (
     <div className="group">
-      <h2 className="text-xl">Feeds</h2>
+      <PageHeader title="Feeds" docsUrl="/feeds" />
       <FeedsTable />
     </div>
   );

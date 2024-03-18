@@ -1,5 +1,5 @@
 import { homeUrl } from "@app/router";
-import { SignupForm } from "@app/shared";
+import { ExternalLink, SignupForm } from "@app/shared";
 import { useNavigate } from "react-router";
 
 export function Exposition() {
@@ -22,22 +22,23 @@ export function Exposition() {
 
       <p>
         Pretty sweet, huh? With that we are excited to introduce everyone to{" "}
-        <a href="https://github.com/picosh/ptun">ptun</a>, a golang library that
-        will serve your websites over an SSH tunnel.
+        <ExternalLink href="https://github.com/picosh/ptun">ptun</ExternalLink>,
+        a golang library that will serve your websites over an SSH tunnel.
       </p>
 
       <p className="m-0 mb-2">
         Web tunnels can be used in many interesting ways. For example, we
-        created <a href="https://pico.sh/imgs">imgs.sh</a> which is a docker
-        image registry authenticated via SSH. <code>docker push</code> and
+        created <ExternalLink href="https://pico.sh/imgs">imgs.sh</ExternalLink>{" "}
+        which is a docker image registry authenticated via SSH.{" "}
+        <code>docker push</code> and
         <code>docker pull</code> work the exact same, because all we do is proxy
         the registry service through an SSH tunnel.
       </p>
 
       <p className="m-0 mb-2">
         We also use web tunnels to serve private sites on{" "}
-        <a href="pgs.sh">pgs.sh</a> which is our static hosting platform -- and
-        how you accessed this site.
+        <ExternalLink href="pgs.sh">pgs.sh</ExternalLink> which is our static
+        hosting platform -- and how you accessed this site.
       </p>
 
       <hr />
