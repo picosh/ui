@@ -1,4 +1,4 @@
-import { plusUrl, upsertPubkeyUrl } from "@app/router";
+import { plusUrl, upsertPubkeyUrl, upsertTokenUrl } from "@app/router";
 import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import { useApi, useLoaderSuccess, useQuery } from "starfx/react";
@@ -21,12 +21,18 @@ export function Banner({ children }: { children: React.ReactNode }) {
 }
 export function BannerLoader({
   isLoading,
-  isError,
   message,
-}: { isLoading?: boolean; isError?: boolean; message: string }) {
+}: {
+  isLoading?: boolean;
+  isSuccess?: boolean;
+  isError?: boolean;
+  message: string;
+}) {
   if (isLoading) return null;
-  if (!isError) return null;
-  return <Banner>{message}</Banner>;
+  if (message) {
+    return <Banner>{message}</Banner>;
+  }
+  return null;
 }
 
 interface LinkProps
@@ -340,6 +346,7 @@ export function TokensTable() {
           <th className="text-left">Name</th>
           <th className="text-left">Created At</th>
           <th className="text-left">Expires At</th>
+          <th className="text-right">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -359,6 +366,14 @@ export function TokensTable() {
               </td>
               <td className="text-left">
                 {new Date(token.expires_at).toDateString()}
+              </td>
+              <td className="text-right">
+                <Link
+                  to={upsertTokenUrl(token.id)}
+                  className="btn-link-sm text-sm"
+                >
+                  edit
+                </Link>
               </td>
             </tr>
           );

@@ -1,5 +1,5 @@
 import { fetchFeatures, fetchPubkeys, fetchTokens } from "@app/api";
-import { upsertPubkeyUrl } from "@app/router";
+import { upsertPubkeyUrl, upsertTokenUrl } from "@app/router";
 import {
   FeaturesTable,
   PubkeysTable,
@@ -28,7 +28,12 @@ export function SettingsPage() {
       </div>
       <PubkeysTable />
 
-      <h2 className="text-xl">API Tokens</h2>
+      <div className="group-h items-center">
+        <h2 className="text-xl p-0">Tokens</h2>
+        <Link to={upsertTokenUrl()} className="btn-link-sm text-sm">
+          Create
+        </Link>
+      </div>
       <TokensTable />
 
       <h2 className="text-xl">Features Enabled</h2>

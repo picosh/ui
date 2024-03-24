@@ -44,10 +44,10 @@ export const [schema, initialState] = createSchema({
   }),
   rssToken: slice.str(),
   tokens: slice.table({
-    empty: { id: "", name: unknown, created_at: now, expires_at: year },
+    empty: { id: "", name: "", created_at: now, expires_at: year },
   }),
   pubkeys: slice.table({
-    empty: { id: "", name: unknown, key: "", created_at: now },
+    empty: { id: "", name: "", key: "", created_at: now },
   }),
   features: slice.table({
     empty: {
@@ -573,3 +573,26 @@ export const updatePubkey = api.patch<{ name: string; id: string }, Pubkey>(
 );
 
 export const deletePubkey = api.delete<{ id: string }>("/pubkeys/:id");
+
+export const createToken = api.post<
+  { name: string },
+  { secret: string; token: Token }
+>("/tokens", function* (ctx, next) {
+  ctx.request = ctx.req({
+    body: JSON.stringify(ctx.payload),
+  });
+
+  yield* next();
+
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  const { secret, token } = ctx.json.value;
+  yield* schema.update(schema.tokens.add({ [token.id]: token }));
+  ctx.loader = {
+    message: `Token created!  Save this secret, you won't see it again: ${secret}`,
+  };
+});
+
+export const deleteToken = api.delete<{ id: string }>("/tokens/:id");
