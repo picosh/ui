@@ -16,6 +16,7 @@ function DeletePubkey({ id }: { id: string }) {
   const action = deletePubkey({ id });
   const del = useApi(action);
   const loader = useLoader(action);
+  const [confirm, setConfirm] = useState(false);
   useLoaderSuccess(loader, () => {
     navigate(settingsUrl());
   });
@@ -25,9 +26,19 @@ function DeletePubkey({ id }: { id: string }) {
       <BannerLoader {...loader} />
       <div>Want to delete this pubkey? It cannot be undone.</div>
       <div>
-        <Button onClick={del.trigger} isLoading={loader.isLoading}>
-          Delete
-        </Button>
+        {confirm ? (
+          <div className="group">
+            <div>Are you sure?</div>
+            <div className="group-h">
+              <Button onClick={del.trigger}>Delete</Button>
+              <Button onClick={() => setConfirm(false)}>Cancel</Button>
+            </div>
+          </div>
+        ) : (
+          <Button onClick={() => setConfirm(true)} isLoading={loader.isLoading}>
+            Delete
+          </Button>
+        )}
       </div>
     </div>
   );
