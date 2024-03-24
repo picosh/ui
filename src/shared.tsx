@@ -1,5 +1,5 @@
-import { plusUrl } from "@app/router";
-import { useState } from "react";
+import { plusUrl, upsertPubkeyUrl } from "@app/router";
+import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import { useApi, useLoaderSuccess, useQuery } from "starfx/react";
 import {
@@ -9,6 +9,7 @@ import {
   selectFeatureByName,
   selectHasRegistered,
   selectPostsBySpace,
+  selectPubkeysAsList,
   useSelector,
 } from "./api";
 
@@ -45,16 +46,18 @@ export function ExternalLink({ children, href, ...props }: LinkProps) {
 export function PageHeader({
   title,
   docsUrl,
-}: { title: string; docsUrl: string }) {
+}: { title: string; docsUrl?: string }) {
   return (
     <div className="group-h items-center">
       <h2 className="text-xl p-0">{title}</h2>
-      <ExternalLink
-        href={`https://pico.sh${docsUrl}`}
-        className="btn-link-sm text-sm"
-      >
-        docs
-      </ExternalLink>
+      {docsUrl ? (
+        <ExternalLink
+          href={`https://pico.sh${docsUrl}`}
+          className="btn-link-sm text-sm"
+        >
+          docs
+        </ExternalLink>
+      ) : null}
     </div>
   );
 }
@@ -71,9 +74,12 @@ export function Button({
   isLoading = false,
   type,
   className,
+  variant = "default",
   ...rest
-}: ButtonProps) {
-  const cls = `${className}`;
+}: ButtonProps & { variant?: "sm" | "default" }) {
+  const cls = `${className} ${
+    variant === "sm" ? "btn-link-sm text-sm" : "btn-link"
+  }`;
   if (isLoading) {
     return (
       <button {...rest} type={type} className={cls} disabled>
@@ -136,7 +142,6 @@ export const RssBox = ({ showTitle = true }: { showTitle?: boolean }) => {
 
 export function SignupForm({ onSuccess }: { onSuccess: () => void }) {
   const hasRegistered = useSelector(selectHasRegistered);
-  console.log(hasRegistered);
   const [name, setName] = useState("");
   const loader = useApi(registerUser({ name }));
   const user = useSelector(schema.user.select);
@@ -277,20 +282,22 @@ export function FeaturesTable() {
 
 export function PubkeysTable() {
   const user = useSelector(schema.user.select);
-  const pubkeys = useSelector(schema.pubkeys.selectTableAsList);
+  const pubkeys = useSelector(selectPubkeysAsList);
   return (
     <table className="w-full box overflow-x-scroll">
       <thead>
         <tr>
+          <th className="text-left">Name</th>
           <th className="text-left">Key</th>
           <th className="text-center">Current</th>
           <th className="text-left">Created At</th>
+          <th className="text-rigth">Action</th>
         </tr>
       </thead>
       <tbody>
         {pubkeys.length === 0 ? (
           <tr>
-            <td colSpan={3} className="text-center">
+            <td colSpan={4} className="text-center">
               No pubkeys?
             </td>
           </tr>
@@ -298,6 +305,7 @@ export function PubkeysTable() {
         {pubkeys.map((pubkey) => {
           return (
             <tr key={pubkey.id}>
+              <td className="text-left">{pubkey.name}</td>
               <td className="text-left">
                 <PubkeyView pubkey={pubkey.key} />
               </td>
@@ -306,6 +314,14 @@ export function PubkeysTable() {
               </td>
               <td className="text-left">
                 {new Date(pubkey.created_at).toDateString()}
+              </td>
+              <td className="text-right">
+                <Link
+                  to={upsertPubkeyUrl(pubkey.id)}
+                  className="btn-link-sm text-sm"
+                >
+                  edit
+                </Link>
               </td>
             </tr>
           );
@@ -405,5 +421,49 @@ export function UserBox() {
         <code>{user.name}</code>
       </div>
     </div>
+  );
+}
+
+export function Form({
+  onSubmit,
+  className,
+  children,
+  ...rest
+}: React.DetailedHTMLProps<
+  React.FormHTMLAttributes<HTMLFormElement>,
+  HTMLFormElement
+>) {
+  return (
+    <form
+      {...rest}
+      onSubmit={(ev) => {
+        ev.preventDefault();
+        if (onSubmit) {
+          onSubmit(ev);
+        }
+      }}
+      className={`${className} group`}
+    >
+      {children}
+    </form>
+  );
+}
+
+export function Breadcrumbs({
+  crumbs,
+  text,
+}: { crumbs: { href: string; text: string }[]; text: string }) {
+  return (
+    <h2 className="text-xl group-h">
+      {crumbs.map((cm) => {
+        return (
+          <Fragment key={cm.href}>
+            <Link to={cm.href}>{cm.text}</Link>
+            <span>/</span>
+          </Fragment>
+        );
+      })}
+      <span>{text}</span>
+    </h2>
   );
 }

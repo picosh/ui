@@ -43,6 +43,11 @@ input:focus {
   border: 2px solid var(--hover);
 }
 
+input:disabled {
+  color: var(--grey-light);
+  cursor: not-allowed;
+}
+
 table {
   border-collapse: collapse;
 }
@@ -97,6 +102,10 @@ td, th {
 .btn-link-sm:hover {
   border: 2px solid var(--hover);
   color: var(--hover);
+}
+
+.text-right {
+  text-align: right;
 }
 
 @media only screen and (max-width: 600px) {

@@ -9,10 +9,10 @@ import {
 } from "@app/api";
 import { usePaginate } from "@app/paginate";
 import { pgsUrl } from "@app/router";
-import { Button, ExternalLink } from "@app/shared";
+import { Breadcrumbs, Button, ExternalLink } from "@app/shared";
 import { useState } from "react";
 import { useParams } from "react-router";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "starfx/react";
 
 export function PgsDetailPage() {
@@ -56,9 +56,7 @@ export function PgsDetailPage() {
   };
   return (
     <div className="group">
-      <h2 className="text-xl">
-        <Link to={pgsUrl()}>pgs</Link> / {name}
-      </h2>
+      <Breadcrumbs crumbs={[{ href: pgsUrl(), text: "pgs" }]} text={name} />
       <input
         value={search}
         onChange={(ev) =>

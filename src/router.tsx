@@ -15,6 +15,7 @@ import {
   SignupPage,
   SuccessPage,
   TunnelsPage,
+  UpsertPubkeyPage,
 } from "./pages";
 
 const HOME_PATH = "/";
@@ -60,6 +61,9 @@ export const successUrl = () => SUCCESS_PATH;
 
 const TUNNELS_PATH = "/tunnels";
 export const tunnelsUrl = () => TUNNELS_PATH;
+
+const UPSERT_PUBKEY_PATH = "/pubkeys/:id";
+export const upsertPubkeyUrl = (id = "new") => `/pubkeys/${id}`;
 
 export const router = createBrowserRouter([
   {
@@ -109,6 +113,10 @@ export const router = createBrowserRouter([
       {
         path: SETTINGS_PATH,
         element: <SettingsPage />,
+      },
+      {
+        path: UPSERT_PUBKEY_PATH,
+        element: <UpsertPubkeyPage />,
       },
     ],
   },

@@ -1,4 +1,5 @@
 import { fetchFeatures, fetchPubkeys, fetchTokens } from "@app/api";
+import { upsertPubkeyUrl } from "@app/router";
 import {
   FeaturesTable,
   PubkeysTable,
@@ -6,6 +7,7 @@ import {
   TokensTable,
   UserBox,
 } from "@app/shared";
+import { Link } from "react-router-dom";
 import { useQuery } from "starfx/react";
 
 export function SettingsPage() {
@@ -18,7 +20,12 @@ export function SettingsPage() {
       <h2 className="text-xl">Account Info</h2>
       <UserBox />
 
-      <h2 className="text-xl">Public Keys</h2>
+      <div className="group-h items-center">
+        <h2 className="text-xl p-0">Public Keys</h2>
+        <Link to={upsertPubkeyUrl()} className="btn-link-sm text-sm">
+          Create
+        </Link>
+      </div>
       <PubkeysTable />
 
       <h2 className="text-xl">API Tokens</h2>

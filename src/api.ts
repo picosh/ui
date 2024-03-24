@@ -19,6 +19,8 @@ interface AclData {
   type: string;
 }
 
+export type PostSpace = "prose" | "pastes" | "feeds" | "unknown";
+
 const unknown = "unknown";
 const now = new Date().toISOString();
 const year = new Date(
@@ -68,7 +70,7 @@ export const [schema, initialState] = createSchema({
       description: "",
       filename: "",
       hidden: false,
-      space: "",
+      space: "unknown" as PostSpace,
       views: 0,
       slug: "",
       file_size: 0,
@@ -246,13 +248,14 @@ export const selectStats = createSelector(
   schema.projects.selectTableAsList,
   schema.posts.selectTableAsList,
   (projects, posts) => {
-    const map: Record<string, number> = {};
+    const map: Record<PostSpace, number> = {
+      prose: 0,
+      pastes: 0,
+      feeds: 0,
+      unknown: 0,
+    };
     for (const post of posts) {
-      if (!map[post.space]) {
-        map[post.space] = 1;
-      } else {
-        map[post.space] += 1;
-      }
+      map[post.space] += 1;
     }
 
     return {
@@ -262,6 +265,24 @@ export const selectStats = createSelector(
       feeds: map.feeds,
     };
   },
+);
+
+export const selectPubkeysAsList = createSelector(
+  schema.user.select,
+  schema.pubkeys.selectTableAsList,
+  (user, pubkeys) =>
+    [...pubkeys].sort((a, b) => {
+      // current should always be at top
+      if (a.key === user.fingerprint) {
+        return -1;
+      }
+      if (b.key === user.fingerprint) {
+        return 1;
+      }
+      const aDate = new Date(a.created_at).getTime();
+      const bDate = new Date(b.created_at).getTime();
+      return bDate - aDate;
+    }),
 );
 
 export const getPostUrl = (space: string) => (u: User, p: Post) => {
@@ -404,27 +425,6 @@ export const fetchOrCreateToken = api.put<never, { secret: string }>(
   ],
 );
 
-export const fetchPubkeys = api.get<never, { pubkeys: Pubkey[] }>("/pubkeys", [
-  function* (ctx, next) {
-    yield* next();
-    if (!ctx.json.ok) {
-      return;
-    }
-
-    const pubkeys = ctx.json.value.pubkeys.reduce<Record<string, Pubkey>>(
-      (acc, pk) => {
-        acc[pk.id] = pk;
-        return acc;
-      },
-      {},
-    );
-    yield* schema.update(schema.pubkeys.set(pubkeys));
-  },
-  mockMdw({
-    pubkeys: [{ id: "1111", key: "xxx", created_at: now }] as Pubkey[],
-  }),
-]);
-
 export const fetchTokens = api.get<never, { tokens: Token[] }>("/tokens", [
   function* (ctx, next) {
     yield* next();
@@ -477,7 +477,7 @@ export const fetchPosts = api.get<{ space: string }, { posts: Post[] }>(
 
     const posts = ctx.json.value.posts.reduce<Record<string, Post>>(
       (acc, pk) => {
-        acc[pk.id] = { ...pk, space: ctx.payload.space };
+        acc[pk.id] = { ...pk, space: ctx.payload.space as PostSpace };
         return acc;
       },
       {},
@@ -514,3 +514,62 @@ export const updateDockerConfig = thunks.create<{ url: string }>(
     yield* next();
   },
 );
+
+export const fetchPubkeys = api.get<never, { pubkeys: Pubkey[] }>("/pubkeys", [
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    const pubkeys = ctx.json.value.pubkeys.reduce<Record<string, Pubkey>>(
+      (acc, pk) => {
+        acc[pk.id] = pk;
+        return acc;
+      },
+      {},
+    );
+    yield* schema.update(schema.pubkeys.set(pubkeys));
+  },
+  mockMdw({
+    pubkeys: [{ id: "1111", key: "xxx", created_at: now }] as Pubkey[],
+  }),
+]);
+
+export const createPubkey = api.post<{ name: string; pubkey: string }, Pubkey>(
+  "/pubkeys",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify(ctx.payload),
+    });
+
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    const pubkey = ctx.json.value;
+    yield* schema.update(schema.pubkeys.add({ [pubkey.id]: pubkey }));
+  },
+);
+
+export const updatePubkey = api.patch<{ name: string; id: string }, Pubkey>(
+  "/pubkeys/:id",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify(ctx.payload),
+    });
+
+    yield* next();
+
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    const pubkey = ctx.json.value;
+    yield* schema.update(schema.pubkeys.add({ [pubkey.id]: pubkey }));
+  },
+);
+
+export const deletePubkey = api.delete<{ id: string }>("/pubkeys/:id");
