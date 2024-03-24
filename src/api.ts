@@ -572,7 +572,17 @@ export const updatePubkey = api.patch<{ name: string; id: string }, Pubkey>(
   },
 );
 
-export const deletePubkey = api.delete<{ id: string }>("/pubkeys/:id");
+export const deletePubkey = api.delete<{ id: string }>(
+  "/pubkeys/:id",
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* schema.update(schema.pubkeys.remove([ctx.payload.id]));
+  },
+);
 
 export const createToken = api.post<
   { name: string },
@@ -595,4 +605,14 @@ export const createToken = api.post<
   };
 });
 
-export const deleteToken = api.delete<{ id: string }>("/tokens/:id");
+export const deleteToken = api.delete<{ id: string }>(
+  "/tokens/:id",
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* schema.update(schema.tokens.remove([ctx.payload.id]));
+  },
+);
