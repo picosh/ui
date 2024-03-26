@@ -42,7 +42,10 @@ export function PlusPage() {
 
       <hr />
 
-      <div className="text-center text-2xl my-4">$25/year</div>
+      <div className="my-4 text-center">
+        <div className="text-2xl">$2/month</div>
+        <div className="text-sm">billed yearly</div>
+      </div>
 
       <div className="group">
         {feature && feature.id !== "" ? (
