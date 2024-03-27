@@ -3,6 +3,7 @@ import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import { useApi, useLoaderSuccess, useQuery } from "starfx/react";
 import {
+  VisitInterval,
   fetchOrCreateToken,
   registerUser,
   schema,
@@ -10,6 +11,7 @@ import {
   selectHasRegistered,
   selectPostsBySpace,
   selectPubkeysAsList,
+  selectYearlyIntervals,
   useSelector,
 } from "./api";
 
@@ -480,5 +482,123 @@ export function Breadcrumbs({
       })}
       <span>{text}</span>
     </h2>
+  );
+}
+
+export function Logo() {
+  return (
+    <svg
+      width="22"
+      height="22"
+      viewBox="0 0 128 128"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <title>logo</title>
+      <path
+        id="logo"
+        d="M107.301 39C111.645 46.5241 113.954 55.0503 113.999 63.7382C114.045 72.4262 111.826 80.9761 107.561 88.5452C103.296 96.1144 97.1319 102.442 89.677 106.903C82.222 111.365 73.7332 113.807 65.047 113.989C56.3608 114.171 47.7772 112.086 40.1419 107.941C32.5067 103.795 26.0835 97.7316 21.5053 90.3476C16.9271 82.9637 14.3519 74.5142 14.0336 65.832C13.7152 57.1497 15.6647 48.5344 19.6899 40.835L64 64L107.301 39Z"
+        stroke="#414558"
+        strokeWidth="12"
+      />
+    </svg>
+  );
+}
+
+function IntervalItem({ interval }: { interval: VisitInterval }) {
+  return (
+    <div className="group-h">
+      <IntervalTitle interval={interval} />
+      {interval.visitors}
+    </div>
+  );
+}
+
+function IntervalTitle({ interval }: { interval: VisitInterval }) {
+  const post = useSelector((s) =>
+    schema.posts.selectById(s, { id: interval.post_id }),
+  );
+  const project = useSelector((s) =>
+    schema.projects.selectById(s, { id: interval.project_id }),
+  );
+  if (project.id) {
+    return <div>{project.name}</div>;
+  }
+  if (post.id) {
+    return <div>{post.title}</div>;
+  }
+  return <div>blog</div>;
+}
+
+/* function SummaryIntervals({
+  title,
+  intervals,
+}: { title: string; intervals: VisitInterval[] }) {
+  return (
+    <div className="box">
+      {intervals.map((interval) => {
+        const key = interval.interval;
+        return <IntervalItem key={key} interval={interval} />;
+      })}
+    </div>
+  );
+} */
+
+export function SummaryAnalyticsView() {
+  const hasAnalytics = useSelector((s) =>
+    selectFeatureByName(s, { name: "analytics" }),
+  );
+  const summary = useSelector(schema.analyticsYearly.select);
+  const intervals = useSelector(selectYearlyIntervals).slice(0, 10);
+  const urls = [...summary.top_urls].sort((a, b) => b.count - a.count);
+  const refs = [...summary.top_referers].sort((a, b) => b.count - a.count);
+
+  if (!hasAnalytics) {
+    return <div className="box">Want to see analytics? Enable them.</div>;
+  }
+
+  return (
+    <div className="group">
+      <div className="box group">
+        <h3 className="text-lg">Unique Visitors (this month)</h3>
+        <div>
+          {intervals.map((interval) => {
+            return (
+              <IntervalItem
+                key={`${interval.interval}${interval.post_id}${interval.project_id}`}
+                interval={interval}
+              />
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="box group">
+        <h3 className="text-lg">Top Site URLs (this month)</h3>
+        <div>
+          {urls.map((interval) => {
+            return (
+              <div key={interval.url}>
+                {interval.url} {interval.count}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="box group">
+        <h3 className="text-lg">Top Referers (this month)</h3>
+        <div>
+          {refs.map((interval, idx) => {
+            if (!interval.url) return null;
+            return (
+              <div key={`${interval.url}${idx}`}>
+                {interval.url} {interval.count}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 }

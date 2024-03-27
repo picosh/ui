@@ -1,4 +1,4 @@
-import { NavLink as NLink, Outlet } from "react-router-dom";
+import { NavLink as NLink, NavLinkProps, Outlet } from "react-router-dom";
 import { schema, selectHasRegistered, useSelector } from "./api.ts";
 import {
   feedsUrl,
@@ -9,8 +9,14 @@ import {
   proseUrl,
   settingsUrl,
 } from "./router";
+import { Logo } from "./shared.tsx";
 
-function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
+function NavLink({
+  to,
+  children,
+  ...props
+}: { to: string; children: React.ReactNode } & NavLinkProps &
+  React.RefAttributes<HTMLAnchorElement>) {
   const hasRegistered = useSelector(selectHasRegistered);
   if (hasRegistered) {
     return (
@@ -18,6 +24,7 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
         to={to}
         className={({ isActive }) => (isActive ? "link-alt-hover" : "link-alt")}
         end
+        {...props}
       >
         {children}
       </NLink>
@@ -31,7 +38,9 @@ export function Nav() {
   const user = useSelector(schema.user.select);
   return (
     <nav className="text-md">
-      <NavLink to={homeUrl()}>(+)</NavLink>
+      <NavLink to={homeUrl()} style={{ height: 22 }}>
+        <Logo />
+      </NavLink>
       <NavLink to={pgsUrl()}>pages</NavLink>
       <NavLink to={imgsUrl()}>imgs</NavLink>
       <NavLink to={proseUrl()}>prose</NavLink>

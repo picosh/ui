@@ -19,6 +19,26 @@ interface AclData {
   type: string;
 }
 
+export interface VisitInterval {
+  post_id: string;
+  project_id: string;
+  interval: string;
+  visitors: number;
+}
+
+export interface VisitUrl {
+  post_id: string;
+  project_id: string;
+  url: string;
+  count: number;
+}
+
+export interface SummaryAnalytics {
+  intervals: VisitInterval[];
+  top_urls: VisitUrl[];
+  top_referers: VisitUrl[];
+}
+
 export type PostSpace = "prose" | "pastes" | "feeds" | "unknown";
 
 const unknown = "unknown";
@@ -103,6 +123,16 @@ export const [schema, initialState] = createSchema({
       tags: [] as string[],
     },
   }),
+  analyticsYearly: slice.obj<SummaryAnalytics>({
+    intervals: [],
+    top_urls: [],
+    top_referers: [],
+  }),
+  analyticsMonthly: slice.obj<SummaryAnalytics>({
+    intervals: [],
+    top_urls: [],
+    top_referers: [],
+  }),
 });
 export type WebState = typeof initialState;
 export type User = WebState["user"];
@@ -137,6 +167,7 @@ export const bootup = thunks.create("bootup", function* (_, next) {
       fetchPubkeys(),
       fetchProjects(),
       fetchTokens(),
+      fetchSummaryAnalytics(),
     ]);
   }
   yield* next();
@@ -283,6 +314,13 @@ export const selectPubkeysAsList = createSelector(
       const bDate = new Date(b.created_at).getTime();
       return bDate - aDate;
     }),
+);
+
+export const selectYearlyIntervals = createSelector(
+  schema.analyticsYearly.select,
+  (summary) => {
+    return [...summary.intervals].sort((a, b) => b.visitors - a.visitors);
+  },
 );
 
 export const getPostUrl = (space: string) => (u: User, p: Post) => {
@@ -614,5 +652,17 @@ export const deleteToken = api.delete<{ id: string }>(
     }
 
     yield* schema.update(schema.tokens.remove([ctx.payload.id]));
+  },
+);
+
+export const fetchSummaryAnalytics = api.get<never, SummaryAnalytics>(
+  "/analytics/year",
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* schema.update(schema.analyticsYearly.set(ctx.json.value));
   },
 );
