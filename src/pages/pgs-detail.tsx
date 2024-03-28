@@ -1,37 +1,23 @@
 import {
   ProjectObject,
-  VisitInterval,
   fetchMonthlyAnalyticsByProject,
   fetchProjectObjects,
   getProjectUrl,
   objectSort,
   schema,
   selectFeatureByName,
-  selectMonthlyAnalyticsByProject,
+  selectMonthlyAnalytics,
   selectObjectsByProjectName,
   selectProjectByName,
   useSelector,
 } from "@app/api";
 import { usePaginate } from "@app/paginate";
 import { pgsDetailUrl, pgsUrl } from "@app/router";
-import { Breadcrumbs, Button, ExternalLink } from "@app/shared";
+import { Breadcrumbs, Button, ExternalLink, IntervalTime } from "@app/shared";
 import { useState } from "react";
 import { useParams } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "starfx/react";
-
-const truncateDate = (dateStr: string): string => {
-  const ds = dateStr.split("T");
-  return ds[0];
-};
-
-function IntervalTime({ interval }: { interval: VisitInterval }) {
-  return (
-    <div>
-      {truncateDate(interval.interval)} {interval.visitors}
-    </div>
-  );
-}
 
 export function PgsDetailPage() {
   const { name = "" } = useParams();
@@ -79,7 +65,7 @@ export function PgsDetailPage() {
     setSortDir(sortDir === "asc" ? "desc" : "asc");
     setSortBy(by);
   };
-  const analytics = useSelector(selectMonthlyAnalyticsByProject);
+  const analytics = useSelector(selectMonthlyAnalytics);
   const projectName = `${project.name} (alias: ${project.project_dir})`;
 
   return (

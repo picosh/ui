@@ -599,3 +599,16 @@ export function SummaryAnalyticsView() {
     </div>
   );
 }
+
+const truncateDate = (dateStr: string): string => {
+  const ds = dateStr.split("T");
+  return ds[0];
+};
+
+export function IntervalTime({ interval }: { interval: VisitInterval }) {
+  return (
+    <div>
+      {truncateDate(interval.interval)} {interval.visitors}
+    </div>
+  );
+}

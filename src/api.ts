@@ -330,33 +330,13 @@ export const selectYearlyIntervals = createSelector(
   },
 );
 
-export const selectMonthlyAnalyticsByProject = createSelector(
+export const selectMonthlyAnalytics = createSelector(
   schema.analyticsMonthly.select,
   (analytics) => {
     const intervals = [...analytics.intervals];
     const top_urls = [...analytics.top_urls].sort((a, b) => b.count - a.count);
     const top_referers = [...analytics.top_referers].sort(
       (a, b) => b.count - a.count,
-    );
-    return {
-      intervals,
-      top_urls,
-      top_referers,
-    };
-  },
-);
-
-export const selectMonthlyAnalyticsByBlog = createSelector(
-  schema.analyticsMonthly.select,
-  (analytics) => {
-    const intervals = analytics.intervals.filter(
-      (interval) => interval.post_id !== "" || interval.project_id === "",
-    );
-    const top_urls = analytics.top_urls.filter(
-      (interval) => interval.post_id !== "" || interval.project_id === "",
-    );
-    const top_referers = analytics.top_referers.filter(
-      (interval) => interval.post_id !== "" || interval.project_id === "",
     );
     return {
       intervals,
@@ -714,6 +694,30 @@ export const fetchMonthlyAnalyticsByProject = api.get<
   { projectId: string },
   SummaryAnalytics
 >("/projects/:projectId/analytics", function* (ctx, next) {
+  yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
+
+  yield* schema.update(schema.analyticsMonthly.set(ctx.json.value));
+});
+
+export const fetchMonthlyAnalyticsByBlog = api.get<never, SummaryAnalytics>(
+  "/posts/analytics",
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* schema.update(schema.analyticsMonthly.set(ctx.json.value));
+  },
+);
+
+export const fetchMonthlyAnalyticsByPost = api.get<
+  { postId: string },
+  SummaryAnalytics
+>("/posts/:postId/analytics", function* (ctx, next) {
   yield* next();
   if (!ctx.json.ok) {
     return;

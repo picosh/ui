@@ -18,6 +18,7 @@ import {
   UpsertPubkeyPage,
   UpsertTokenPage,
 } from "./pages";
+import { ProseDetailPage } from "./pages/prose-detail.tsx";
 
 const HOME_PATH = "/";
 export const homeUrl = () => HOME_PATH;
@@ -54,6 +55,9 @@ export const pgsDetailUrl = (name: string, search = "") =>
 
 const PROSE_PATH = "/prose";
 export const proseUrl = () => PROSE_PATH;
+
+const PROSE_DETAIL_PATH = "/prose/:id";
+export const proseDetailUrl = (id: string) => `/prose/${id}`;
 
 const SETTINGS_PATH = "/settings";
 export const settingsUrl = () => SETTINGS_PATH;
@@ -115,6 +119,11 @@ export const router = createBrowserRouter([
         path: PROSE_PATH,
         element: <ProsePage />,
       },
+      {
+        path: PROSE_DETAIL_PATH,
+        element: <ProseDetailPage />,
+      },
+
       {
         path: SETTINGS_PATH,
         element: <SettingsPage />,
