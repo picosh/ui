@@ -35,8 +35,8 @@ label {
 }
 
 input {
-  padding: 0.4rem 0.2rem;
-  border: 2px solid var(--visited);
+  padding: 0.4rem 0.3rem;
+  border: 2px solid var(--grey-light);
   color: var(--text-color);
   background-color: var(--bg-color);
 }
@@ -45,7 +45,8 @@ input::placeholder {
   color: var(--grey-light);
 }
 
-input:focus {
+input:focus,
+input:hover {
   outline: none !important;
   border: 2px solid var(--hover);
 }

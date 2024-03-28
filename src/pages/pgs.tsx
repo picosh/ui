@@ -44,9 +44,7 @@ function ProjectsTable() {
           return (
             <tr key={project.id}>
               <td className="text-left">
-                <Link to={pgsDetailUrl(project.project_dir)}>
-                  {project.name}
-                </Link>
+                <Link to={pgsDetailUrl(project.name)}>{project.name}</Link>
               </td>
               <td className="text-left">
                 <ExternalLink href={getProjectUrl(user, project)}>

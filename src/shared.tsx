@@ -1,4 +1,9 @@
-import { plusUrl, upsertPubkeyUrl, upsertTokenUrl } from "@app/router";
+import {
+  pgsDetailUrl,
+  plusUrl,
+  upsertPubkeyUrl,
+  upsertTokenUrl,
+} from "@app/router";
 import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import { useApi, useLoaderSuccess, useQuery } from "starfx/react";
@@ -522,27 +527,17 @@ function IntervalTitle({ interval }: { interval: VisitInterval }) {
     schema.projects.selectById(s, { id: interval.project_id }),
   );
   if (project.id) {
-    return <div>{project.name}</div>;
+    return (
+      <div>
+        <Link to={pgsDetailUrl(project.name)}>{project.name}</Link>
+      </div>
+    );
   }
   if (post.id) {
     return <div>{post.title}</div>;
   }
   return <div>blog</div>;
 }
-
-/* function SummaryIntervals({
-  title,
-  intervals,
-}: { title: string; intervals: VisitInterval[] }) {
-  return (
-    <div className="box">
-      {intervals.map((interval) => {
-        const key = interval.interval;
-        return <IntervalItem key={key} interval={interval} />;
-      })}
-    </div>
-  );
-} */
 
 export function SummaryAnalyticsView() {
   const hasAnalytics = useSelector((s) =>
@@ -573,30 +568,32 @@ export function SummaryAnalyticsView() {
         </div>
       </div>
 
-      <div className="box group">
-        <h3 className="text-lg">Top Site URLs (this month)</h3>
-        <div>
-          {urls.map((interval) => {
-            return (
-              <div key={interval.url}>
-                {interval.url} {interval.count}
-              </div>
-            );
-          })}
+      <div className="flex gap">
+        <div className="box group flex-1">
+          <h3 className="text-lg">Top Site URLs (this month)</h3>
+          <div>
+            {urls.map((interval) => {
+              return (
+                <div key={interval.url}>
+                  {interval.url} {interval.count}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
 
-      <div className="box group">
-        <h3 className="text-lg">Top Referers (this month)</h3>
-        <div>
-          {refs.map((interval, idx) => {
-            if (!interval.url) return null;
-            return (
-              <div key={`${interval.url}${idx}`}>
-                {interval.url} {interval.count}
-              </div>
-            );
-          })}
+        <div className="box group flex-1">
+          <h3 className="text-lg">Top Referers (this month)</h3>
+          <div>
+            {refs.map((interval, idx) => {
+              if (!interval.url) return null;
+              return (
+                <div key={`${interval.url}${idx}`}>
+                  {interval.url} {interval.count}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>

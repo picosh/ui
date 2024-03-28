@@ -49,7 +49,8 @@ const PGS_PATH = "/pgs";
 export const pgsUrl = () => PGS_PATH;
 
 const PGS_DETAIL_PATH = "/pgs/:name";
-export const pgsDetailUrl = (name: string) => `/pgs/${name}`;
+export const pgsDetailUrl = (name: string, search = "") =>
+  `/pgs/${name}${search ? `?search=${encodeURIComponent(search)}` : ""}`;
 
 const PROSE_PATH = "/prose";
 export const proseUrl = () => PROSE_PATH;

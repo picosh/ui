@@ -168,6 +168,7 @@ export const bootup = thunks.create("bootup", function* (_, next) {
       fetchProjects(),
       fetchTokens(),
       fetchSummaryAnalytics(),
+      fetchMonthlyAnalytics(),
     ]);
   }
   yield* next();
@@ -316,10 +317,58 @@ export const selectPubkeysAsList = createSelector(
     }),
 );
 
+export const selectProjectByName = createSelector(
+  schema.projects.selectTableAsList,
+  (_: WebState, p: { name: string }) => p.name,
+  (projects, name) =>
+    projects.find((p) => p.name === name) || schema.projects.empty,
+);
+
 export const selectYearlyIntervals = createSelector(
   schema.analyticsYearly.select,
   (summary) => {
     return [...summary.intervals].sort((a, b) => b.visitors - a.visitors);
+  },
+);
+
+export const selectMonthlyAnalyticsByProject = createSelector(
+  schema.analyticsMonthly.select,
+  (_: WebState, p: { projectId: string }) => p.projectId,
+  (analytics, projectId) => {
+    const intervals = analytics.intervals.filter(
+      (interval) => interval.project_id === projectId,
+    );
+    const top_urls = analytics.top_urls
+      .filter((interval) => interval.project_id === projectId)
+      .sort((a, b) => b.count - a.count);
+    const top_referers = analytics.top_referers
+      .filter((interval) => interval.project_id === projectId)
+      .sort((a, b) => b.count - a.count);
+    return {
+      intervals,
+      top_urls,
+      top_referers,
+    };
+  },
+);
+
+export const selectMonthlyAnalyticsByBlog = createSelector(
+  schema.analyticsMonthly.select,
+  (analytics) => {
+    const intervals = analytics.intervals.filter(
+      (interval) => interval.post_id !== "" || interval.project_id === "",
+    );
+    const top_urls = analytics.top_urls.filter(
+      (interval) => interval.post_id !== "" || interval.project_id === "",
+    );
+    const top_referers = analytics.top_referers.filter(
+      (interval) => interval.post_id !== "" || interval.project_id === "",
+    );
+    return {
+      intervals,
+      top_urls,
+      top_referers,
+    };
   },
 );
 
@@ -664,5 +713,17 @@ export const fetchSummaryAnalytics = api.get<never, SummaryAnalytics>(
     }
 
     yield* schema.update(schema.analyticsYearly.set(ctx.json.value));
+  },
+);
+
+export const fetchMonthlyAnalytics = api.get<never, SummaryAnalytics>(
+  "/analytics",
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    yield* schema.update(schema.analyticsMonthly.set(ctx.json.value));
   },
 );

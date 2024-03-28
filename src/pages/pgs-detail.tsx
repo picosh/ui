@@ -1,19 +1,35 @@
 import {
   ProjectObject,
+  VisitInterval,
   fetchProjectObjects,
   getProjectUrl,
   objectSort,
   schema,
+  selectMonthlyAnalyticsByProject,
   selectObjectsByProjectName,
+  selectProjectByName,
   useSelector,
 } from "@app/api";
 import { usePaginate } from "@app/paginate";
-import { pgsUrl } from "@app/router";
+import { pgsDetailUrl, pgsUrl } from "@app/router";
 import { Breadcrumbs, Button, ExternalLink } from "@app/shared";
 import { useState } from "react";
 import { useParams } from "react-router";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "starfx/react";
+
+const truncateDate = (dateStr: string): string => {
+  const ds = dateStr.split("T");
+  return ds[0];
+};
+
+function IntervalTime({ interval }: { interval: VisitInterval }) {
+  return (
+    <div>
+      {truncateDate(interval.interval)} {interval.visitors}
+    </div>
+  );
+}
 
 export function PgsDetailPage() {
   const { name = "" } = useParams();
@@ -23,16 +39,19 @@ export function PgsDetailPage() {
   const [sortBy, setSortBy] = useState("name" as keyof ProjectObject);
   const user = useSelector(schema.user.select);
   const url = getProjectUrl(user, { name });
-  useQuery(fetchProjectObjects({ name }));
-  const objects = useSelector((s) => selectObjectsByProjectName(s, { name }))
+  const project = useSelector((s) => selectProjectByName(s, { name }));
+  useQuery(fetchProjectObjects({ name: project.project_dir }));
+  const objects = useSelector((s) =>
+    selectObjectsByProjectName(s, { name: project.project_dir }),
+  )
     .filter((obj) => {
       if (search === "") {
         return true;
       }
-      return obj.name
-        .replace("/", "")
+      const match = `/${obj.name}`
         .toLocaleLowerCase()
         .includes(search.toLocaleLowerCase());
+      return match;
     })
     .sort((a, b) => {
       if (sortBy === "size") {
@@ -54,25 +73,71 @@ export function PgsDetailPage() {
     setSortDir(sortDir === "asc" ? "desc" : "asc");
     setSortBy(by);
   };
+  const analytics = useSelector((s) =>
+    selectMonthlyAnalyticsByProject(s, { projectId: project.id }),
+  );
+  const projectName = `${project.name} (alias: ${project.project_dir})`;
+
   return (
     <div className="group">
-      <Breadcrumbs crumbs={[{ href: pgsUrl(), text: "pgs" }]} text={name} />
+      <Breadcrumbs
+        crumbs={[{ href: pgsUrl(), text: "pgs" }]}
+        text={projectName}
+      />
+
+      <div className="box group flex-1">
+        <h3 className="text-lg">Unique visitors</h3>
+        {analytics.intervals.map((interval) => {
+          return <IntervalTime key={interval.interval} interval={interval} />;
+        })}
+      </div>
+
+      <div className="flex gap">
+        <div className="box group flex-1">
+          <h3 className="text-lg">Top URLs</h3>
+          {analytics.top_urls.map((url) => {
+            return (
+              <div key={url.url}>
+                <Link to={pgsDetailUrl(project.name, url.url)} replace>
+                  {url.url}
+                </Link>{" "}
+                {url.count}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="box group flex-1">
+          <h3 className="text-lg">Top Referers</h3>
+          {analytics.top_referers.map((url) => {
+            return (
+              <div key={url.url}>
+                <ExternalLink href={`//${url.url}`}>{url.url}</ExternalLink>{" "}
+                {url.count}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       <input
+        placeholder="Search for objects"
         value={search}
         onChange={(ev) =>
           setParams({ search: ev.currentTarget.value }, { replace: true })
         }
       />
+
       <div className="group-h">
         <div>{paginate.totalItems} objects</div>
         <span>&middot;</span>
-        <Button onClick={paginate.prev} className="border px">
+        <Button onClick={paginate.prev} className="border px" variant="sm">
           prev
         </Button>
         <div>
           {paginate.page} / {paginate.totalPages}
         </div>
-        <Button onClick={paginate.next} className="border px">
+        <Button onClick={paginate.next} className="border px" variant="sm">
           next
         </Button>
       </div>
