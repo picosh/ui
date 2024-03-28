@@ -1,10 +1,12 @@
 import {
   ProjectObject,
   VisitInterval,
+  fetchMonthlyAnalyticsByProject,
   fetchProjectObjects,
   getProjectUrl,
   objectSort,
   schema,
+  selectFeatureByName,
   selectMonthlyAnalyticsByProject,
   selectObjectsByProjectName,
   selectProjectByName,
@@ -37,10 +39,14 @@ export function PgsDetailPage() {
   const search = params.get("search") || "";
   const [sortDir, setSortDir] = useState("asc");
   const [sortBy, setSortBy] = useState("name" as keyof ProjectObject);
+  const hasAnalytics = useSelector((s) =>
+    selectFeatureByName(s, { name: "analytics" }),
+  );
   const user = useSelector(schema.user.select);
   const url = getProjectUrl(user, { name });
   const project = useSelector((s) => selectProjectByName(s, { name }));
   useQuery(fetchProjectObjects({ name: project.project_dir }));
+  useQuery(fetchMonthlyAnalyticsByProject({ projectId: project.id }));
   const objects = useSelector((s) =>
     selectObjectsByProjectName(s, { name: project.project_dir }),
   )
@@ -73,9 +79,7 @@ export function PgsDetailPage() {
     setSortDir(sortDir === "asc" ? "desc" : "asc");
     setSortBy(by);
   };
-  const analytics = useSelector((s) =>
-    selectMonthlyAnalyticsByProject(s, { projectId: project.id }),
-  );
+  const analytics = useSelector(selectMonthlyAnalyticsByProject);
   const projectName = `${project.name} (alias: ${project.project_dir})`;
 
   return (
@@ -85,40 +89,48 @@ export function PgsDetailPage() {
         text={projectName}
       />
 
-      <div className="box group flex-1">
-        <h3 className="text-lg">Unique visitors</h3>
-        {analytics.intervals.map((interval) => {
-          return <IntervalTime key={interval.interval} interval={interval} />;
-        })}
-      </div>
+      {hasAnalytics ? (
+        <>
+          <div className="box group flex-1">
+            <h3 className="text-lg">Unique visitors</h3>
+            {analytics.intervals.map((interval) => {
+              return (
+                <IntervalTime key={interval.interval} interval={interval} />
+              );
+            })}
+          </div>
 
-      <div className="flex gap">
-        <div className="box group flex-1">
-          <h3 className="text-lg">Top URLs</h3>
-          {analytics.top_urls.map((url) => {
-            return (
-              <div key={url.url}>
-                <Link to={pgsDetailUrl(project.name, url.url)} replace>
-                  {url.url}
-                </Link>{" "}
-                {url.count}
-              </div>
-            );
-          })}
-        </div>
+          <div className="flex gap">
+            <div className="box group flex-1">
+              <h3 className="text-lg">Top URLs</h3>
+              {analytics.top_urls.map((url) => {
+                return (
+                  <div key={url.url}>
+                    <Link to={pgsDetailUrl(project.name, url.url)} replace>
+                      {url.url}
+                    </Link>{" "}
+                    {url.count}
+                  </div>
+                );
+              })}
+            </div>
 
-        <div className="box group flex-1">
-          <h3 className="text-lg">Top Referers</h3>
-          {analytics.top_referers.map((url) => {
-            return (
-              <div key={url.url}>
-                <ExternalLink href={`//${url.url}`}>{url.url}</ExternalLink>{" "}
-                {url.count}
-              </div>
-            );
-          })}
-        </div>
-      </div>
+            <div className="box group flex-1">
+              <h3 className="text-lg">Top Referers</h3>
+              {analytics.top_referers.map((url) => {
+                return (
+                  <div key={url.url}>
+                    <ExternalLink href={`//${url.url}`}>{url.url}</ExternalLink>{" "}
+                    {url.count}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="box">Want to see analytics? Enable them.</div>
+      )}
 
       <input
         placeholder="Search for objects"

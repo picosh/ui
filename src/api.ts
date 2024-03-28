@@ -168,7 +168,6 @@ export const bootup = thunks.create("bootup", function* (_, next) {
       fetchProjects(),
       fetchTokens(),
       fetchSummaryAnalytics(),
-      fetchMonthlyAnalytics(),
     ]);
   }
   yield* next();
@@ -333,17 +332,12 @@ export const selectYearlyIntervals = createSelector(
 
 export const selectMonthlyAnalyticsByProject = createSelector(
   schema.analyticsMonthly.select,
-  (_: WebState, p: { projectId: string }) => p.projectId,
-  (analytics, projectId) => {
-    const intervals = analytics.intervals.filter(
-      (interval) => interval.project_id === projectId,
+  (analytics) => {
+    const intervals = [...analytics.intervals];
+    const top_urls = [...analytics.top_urls].sort((a, b) => b.count - a.count);
+    const top_referers = [...analytics.top_referers].sort(
+      (a, b) => b.count - a.count,
     );
-    const top_urls = analytics.top_urls
-      .filter((interval) => interval.project_id === projectId)
-      .sort((a, b) => b.count - a.count);
-    const top_referers = analytics.top_referers
-      .filter((interval) => interval.project_id === projectId)
-      .sort((a, b) => b.count - a.count);
     return {
       intervals,
       top_urls,
@@ -716,14 +710,14 @@ export const fetchSummaryAnalytics = api.get<never, SummaryAnalytics>(
   },
 );
 
-export const fetchMonthlyAnalytics = api.get<never, SummaryAnalytics>(
-  "/analytics",
-  function* (ctx, next) {
-    yield* next();
-    if (!ctx.json.ok) {
-      return;
-    }
+export const fetchMonthlyAnalyticsByProject = api.get<
+  { projectId: string },
+  SummaryAnalytics
+>("/projects/:projectId/analytics", function* (ctx, next) {
+  yield* next();
+  if (!ctx.json.ok) {
+    return;
+  }
 
-    yield* schema.update(schema.analyticsMonthly.set(ctx.json.value));
-  },
-);
+  yield* schema.update(schema.analyticsMonthly.set(ctx.json.value));
+});
