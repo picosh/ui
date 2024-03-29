@@ -1,6 +1,7 @@
 import { fetchFeatures, fetchPubkeys, fetchTokens } from "@app/api";
 import { upsertPubkeyUrl, upsertTokenUrl } from "@app/router";
 import {
+  AnalyticsSettings,
   FeaturesTable,
   PubkeysTable,
   RssBox,
@@ -35,6 +36,9 @@ export function SettingsPage() {
         </Link>
       </div>
       <TokensTable />
+
+      <h2 className="text-xl">Analytics</h2>
+      <AnalyticsSettings />
 
       <h2 className="text-xl">Features Enabled</h2>
       <FeaturesTable />

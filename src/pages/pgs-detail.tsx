@@ -13,7 +13,13 @@ import {
 } from "@app/api";
 import { usePaginate } from "@app/paginate";
 import { pgsDetailUrl, pgsUrl } from "@app/router";
-import { Breadcrumbs, Button, ExternalLink, IntervalTime } from "@app/shared";
+import {
+  AnalyticsSettings,
+  Breadcrumbs,
+  Button,
+  ExternalLink,
+  IntervalTime,
+} from "@app/shared";
 import { useState } from "react";
 import { useParams } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
@@ -115,7 +121,7 @@ export function PgsDetailPage() {
           </div>
         </>
       ) : (
-        <div className="box">Want to see analytics? Enable them.</div>
+        <AnalyticsSettings />
       )}
 
       <input

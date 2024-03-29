@@ -725,3 +725,61 @@ export const fetchMonthlyAnalyticsByPost = api.get<
 
   yield* schema.update(schema.analyticsMonthly.set(ctx.json.value));
 });
+
+export const enableAnalytics = api.post<never, FeatureFlag>(
+  "/features",
+  function* (ctx, next) {
+    ctx.request = ctx.req({
+      body: JSON.stringify({ name: "analytics" }),
+    });
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    const feature = ctx.json.value;
+    yield* schema.update(schema.features.add({ [feature.id]: feature }));
+  },
+);
+
+export const disableAnalytics = api.delete(
+  "/features/analytics",
+  function* (ctx, next) {
+    yield* next();
+    if (!ctx.json.ok) {
+      return;
+    }
+
+    const feature = yield* select((s: WebState) =>
+      selectFeatureByName(s, { name: "analytics" }),
+    );
+    if (!feature) {
+      return;
+    }
+
+    yield* schema.update(schema.features.remove([feature.id]));
+  },
+);
+
+export const toggleAnalytics = thunks.create(
+  "toggle-analytics",
+  function* (_, next) {
+    const feature = yield* select((s: WebState) =>
+      selectFeatureByName(s, { name: "analytics" }),
+    );
+
+    if (feature) {
+      const disableCtx = yield* disableAnalytics.run();
+      if (!disableCtx.json.ok) {
+        throw new Error(disableCtx.json.error);
+      }
+    } else {
+      const enableCtx = yield* enableAnalytics.run();
+      if (!enableCtx.json.ok) {
+        throw new Error(enableCtx.json.error);
+      }
+    }
+
+    yield* next();
+  },
+);

@@ -6,7 +6,13 @@ import {
 } from "@app/router";
 import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import { useApi, useLoaderSuccess, useQuery } from "starfx/react";
+import {
+  useApi,
+  useDispatch,
+  useLoader,
+  useLoaderSuccess,
+  useQuery,
+} from "starfx/react";
 import {
   VisitInterval,
   fetchOrCreateToken,
@@ -17,6 +23,7 @@ import {
   selectPostsBySpace,
   selectPubkeysAsList,
   selectYearlyIntervals,
+  toggleAnalytics,
   useSelector,
 } from "./api";
 
@@ -549,7 +556,7 @@ export function SummaryAnalyticsView() {
   const refs = [...summary.top_referers].sort((a, b) => b.count - a.count);
 
   if (!hasAnalytics) {
-    return <div className="box">Want to see analytics? Enable them.</div>;
+    return <AnalyticsSettings />;
   }
 
   return (
@@ -609,6 +616,40 @@ export function IntervalTime({ interval }: { interval: VisitInterval }) {
   return (
     <div>
       {truncateDate(interval.interval)} {interval.visitors}
+    </div>
+  );
+}
+
+export function AnalyticsSettings() {
+  const hasAnalytics = useSelector((s) =>
+    selectFeatureByName(s, { name: "analytics" }),
+  );
+  const dispatch = useDispatch();
+  const action = toggleAnalytics();
+  const onToggle = () => {
+    dispatch(action);
+  };
+  const loader = useLoader(action);
+
+  return (
+    <div className="box">
+      <BannerLoader {...loader} />
+
+      {hasAnalytics ? (
+        <div className="group-h">
+          <div className="font-bold">Analytics is enabled.</div>
+          <Button onClick={onToggle} variant="sm" isLoading={loader.isLoading}>
+            Disable Analytics
+          </Button>
+        </div>
+      ) : (
+        <div className="group-h">
+          <div className="font-bold">Analytics is disabled.</div>
+          <Button onClick={onToggle} variant="sm" isLoading={loader.isLoading}>
+            Enable Analytics
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

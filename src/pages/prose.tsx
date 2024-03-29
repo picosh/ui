@@ -9,7 +9,12 @@ import {
   useSelector,
 } from "@app/api";
 import { proseDetailUrl } from "@app/router";
-import { ExternalLink, IntervalTime, PageHeader } from "@app/shared";
+import {
+  AnalyticsSettings,
+  ExternalLink,
+  IntervalTime,
+  PageHeader,
+} from "@app/shared";
 import { Link } from "react-router-dom";
 import { useQuery } from "starfx/react";
 
@@ -110,7 +115,7 @@ export function ProsePage() {
           </div>
         </>
       ) : (
-        <div className="box">Want to see analytics? Enable them.</div>
+        <AnalyticsSettings />
       )}
 
       <ProseTable />

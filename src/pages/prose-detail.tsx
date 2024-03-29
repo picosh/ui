@@ -6,7 +6,13 @@ import {
   useSelector,
 } from "@app/api";
 import { proseUrl } from "@app/router";
-import { Breadcrumbs, Button, ExternalLink, IntervalTime } from "@app/shared";
+import {
+  AnalyticsSettings,
+  Breadcrumbs,
+  Button,
+  ExternalLink,
+  IntervalTime,
+} from "@app/shared";
 import { useParams } from "react-router";
 import { useQuery } from "starfx/react";
 
@@ -50,7 +56,7 @@ export function ProseDetailPage() {
           </div>
         </div>
       ) : (
-        <div className="box">Want to see analytics? Enable them.</div>
+        <AnalyticsSettings />
       )}
 
       <div className="box">
