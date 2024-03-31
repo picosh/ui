@@ -635,6 +635,8 @@ export function AnalyticsSettings() {
     <div className="box group">
       <BannerLoader {...loader} />
 
+      <Banner>Analytics are a work in progress</Banner>
+
       <div>
         Get usage statistics on your blog, blog posts, and pages sites. Unique
         visitors, most popular URLs, and top referers are a couple of examples
