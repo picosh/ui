@@ -635,6 +635,16 @@ export function AnalyticsSettings() {
     <div className="box">
       <BannerLoader {...loader} />
 
+      <p>
+        Get usage statistics on your blog, blog posts, and pages sites. Unique
+        visitors, most popular URLs, and top referers are a couple of examples
+        of our stats. You can read more about analytics from our{" "}
+        <ExternalLink href="https://pico.sh/privacy#analytics">
+          privacy policy
+        </ExternalLink>
+        .
+      </p>
+
       {hasAnalytics ? (
         <div className="group-h">
           <div className="font-bold">Analytics is enabled.</div>
