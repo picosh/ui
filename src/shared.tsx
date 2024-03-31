@@ -632,7 +632,7 @@ export function AnalyticsSettings() {
   const loader = useLoader(action);
 
   return (
-    <div className="box">
+    <div className="box group">
       <BannerLoader {...loader} />
 
       <div>
