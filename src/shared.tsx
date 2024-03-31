@@ -635,7 +635,7 @@ export function AnalyticsSettings() {
     <div className="box">
       <BannerLoader {...loader} />
 
-      <p>
+      <div>
         Get usage statistics on your blog, blog posts, and pages sites. Unique
         visitors, most popular URLs, and top referers are a couple of examples
         of our stats. You can read more about analytics from our{" "}
@@ -643,7 +643,12 @@ export function AnalyticsSettings() {
           privacy policy
         </ExternalLink>
         .
-      </p>
+      </div>
+
+      <div>
+        We do not collect usage statistic unless analytics is enabled. Further,
+        when analytics are disabled we do not purge usage statistics.
+      </div>
 
       {hasAnalytics ? (
         <div className="group-h">
