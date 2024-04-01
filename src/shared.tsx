@@ -652,6 +652,11 @@ export function AnalyticsSettings() {
         when analytics are disabled we do not purge usage statistics.
       </div>
 
+      <div>
+        We will only store usage statistics for 1 year from when the event was
+        created.
+      </div>
+
       {hasAnalytics ? (
         <div className="group-h">
           <div className="font-bold">Analytics is enabled.</div>
