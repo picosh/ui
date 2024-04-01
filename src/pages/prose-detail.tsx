@@ -10,8 +10,8 @@ import {
   AnalyticsSettings,
   Breadcrumbs,
   Button,
-  ExternalLink,
-  IntervalTime,
+  TopReferers,
+  UniqueVisitorsByTimeBox,
 } from "@app/shared";
 import { useParams } from "react-router";
 import { useQuery } from "starfx/react";
@@ -34,26 +34,8 @@ export function ProseDetailPage() {
 
       {hasAnalytics ? (
         <div className="flex gap">
-          <div className="box group flex-1">
-            <h3 className="text-lg">Unique visitors (this month)</h3>
-            {analytics.intervals.map((interval) => {
-              return (
-                <IntervalTime key={interval.interval} interval={interval} />
-              );
-            })}
-          </div>
-
-          <div className="box group flex-1">
-            <h3 className="text-lg">Top Referers</h3>
-            {analytics.top_referers.map((url) => {
-              return (
-                <div key={url.url}>
-                  <ExternalLink href={`//${url.url}`}>{url.url}</ExternalLink>{" "}
-                  {url.count}
-                </div>
-              );
-            })}
-          </div>
+          <UniqueVisitorsByTimeBox intervals={analytics.intervals} />
+          <TopReferers referers={analytics.top_referers} />
         </div>
       ) : (
         <AnalyticsSettings />

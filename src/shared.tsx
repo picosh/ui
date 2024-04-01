@@ -1,6 +1,8 @@
 import {
   pgsDetailUrl,
   plusUrl,
+  proseDetailUrl,
+  proseUrl,
   upsertPubkeyUrl,
   upsertTokenUrl,
 } from "@app/router";
@@ -15,6 +17,7 @@ import {
 } from "starfx/react";
 import {
   VisitInterval,
+  VisitUrl,
   fetchOrCreateToken,
   registerUser,
   schema,
@@ -541,9 +544,95 @@ function IntervalTitle({ interval }: { interval: VisitInterval }) {
     );
   }
   if (post.id) {
-    return <div>{post.title}</div>;
+    return (
+      <div>
+        <Link to={proseDetailUrl(post.id)}>{post.title}</Link>
+      </div>
+    );
   }
-  return <div>blog</div>;
+  return (
+    <div>
+      <Link to={proseUrl()}>blog</Link>
+    </div>
+  );
+}
+
+export function UniqueVisitorsBox({
+  intervals,
+}: { intervals: VisitInterval[] }) {
+  return (
+    <div className="box group flex-1">
+      <h3 className="text-lg">Unique Visitors (this month)</h3>
+      <div>
+        {intervals.map((interval) => {
+          return (
+            <IntervalItem
+              key={`${interval.interval}${interval.post_id}${interval.project_id}`}
+              interval={interval}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function UniqueVisitorsByTimeBox({
+  intervals,
+}: { intervals: VisitInterval[] }) {
+  return (
+    <div className="box group flex-1">
+      <h3 className="text-lg">Unique Visitors (this month)</h3>
+      <div>
+        {intervals.map((interval) => {
+          return (
+            <IntervalTime
+              key={`${interval.interval}${interval.post_id}${interval.project_id}`}
+              interval={interval}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function TopSiteUrls({ urls }: { urls: VisitUrl[] }) {
+  return (
+    <div className="box group flex-1">
+      <h3 className="text-lg">Top Site URLs (this month)</h3>
+      <div>
+        {urls.map((interval) => {
+          return (
+            <div key={interval.url}>
+              {interval.url} {interval.count}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function TopReferers({ referers }: { referers: VisitUrl[] }) {
+  return (
+    <div className="box group flex-1">
+      <h3 className="text-lg">Top Referers (this month)</h3>
+      <div>
+        {referers.map((interval, idx) => {
+          if (!interval.url) return null;
+          return (
+            <div key={`${interval.url}${idx}`}>
+              <ExternalLink href={`//${interval.url}`}>
+                {interval.url}
+              </ExternalLink>{" "}
+              {interval.count}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 export function SummaryAnalyticsView() {
@@ -561,47 +650,11 @@ export function SummaryAnalyticsView() {
 
   return (
     <div className="group">
-      <div className="box group">
-        <h3 className="text-lg">Unique Visitors (this month)</h3>
-        <div>
-          {intervals.map((interval) => {
-            return (
-              <IntervalItem
-                key={`${interval.interval}${interval.post_id}${interval.project_id}`}
-                interval={interval}
-              />
-            );
-          })}
-        </div>
-      </div>
+      <UniqueVisitorsBox intervals={intervals} />
 
       <div className="flex gap">
-        <div className="box group flex-1">
-          <h3 className="text-lg">Top Site URLs (this month)</h3>
-          <div>
-            {urls.map((interval) => {
-              return (
-                <div key={interval.url}>
-                  {interval.url} {interval.count}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="box group flex-1">
-          <h3 className="text-lg">Top Referers (this month)</h3>
-          <div>
-            {refs.map((interval, idx) => {
-              if (!interval.url) return null;
-              return (
-                <div key={`${interval.url}${idx}`}>
-                  {interval.url} {interval.count}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        <TopSiteUrls urls={urls} />
+        <TopReferers referers={refs} />
       </div>
     </div>
   );

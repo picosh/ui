@@ -12,17 +12,19 @@ import {
   useSelector,
 } from "@app/api";
 import { usePaginate } from "@app/paginate";
-import { pgsDetailUrl, pgsUrl } from "@app/router";
+import { pgsUrl } from "@app/router";
 import {
   AnalyticsSettings,
   Breadcrumbs,
   Button,
   ExternalLink,
-  IntervalTime,
+  TopReferers,
+  TopSiteUrls,
+  UniqueVisitorsByTimeBox,
 } from "@app/shared";
 import { useState } from "react";
 import { useParams } from "react-router";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "starfx/react";
 
 export function PgsDetailPage() {
@@ -83,41 +85,11 @@ export function PgsDetailPage() {
 
       {hasAnalytics ? (
         <>
-          <div className="box group flex-1">
-            <h3 className="text-lg">Unique visitors (this month)</h3>
-            {analytics.intervals.map((interval) => {
-              return (
-                <IntervalTime key={interval.interval} interval={interval} />
-              );
-            })}
-          </div>
+          <UniqueVisitorsByTimeBox intervals={analytics.intervals} />
 
           <div className="flex gap">
-            <div className="box group flex-1">
-              <h3 className="text-lg">Top URLs</h3>
-              {analytics.top_urls.map((url) => {
-                return (
-                  <div key={url.url}>
-                    <Link to={pgsDetailUrl(project.name, url.url)} replace>
-                      {url.url}
-                    </Link>{" "}
-                    {url.count}
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="box group flex-1">
-              <h3 className="text-lg">Top Referers</h3>
-              {analytics.top_referers.map((url) => {
-                return (
-                  <div key={url.url}>
-                    <ExternalLink href={`//${url.url}`}>{url.url}</ExternalLink>{" "}
-                    {url.count}
-                  </div>
-                );
-              })}
-            </div>
+            <TopSiteUrls urls={analytics.top_urls} />
+            <TopReferers referers={analytics.top_referers} />
           </div>
         </>
       ) : (

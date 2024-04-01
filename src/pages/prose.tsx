@@ -12,8 +12,10 @@ import { proseDetailUrl } from "@app/router";
 import {
   AnalyticsSettings,
   ExternalLink,
-  IntervalTime,
   PageHeader,
+  TopReferers,
+  TopSiteUrls,
+  UniqueVisitorsByTimeBox,
 } from "@app/shared";
 import { Link } from "react-router-dom";
 import { useQuery } from "starfx/react";
@@ -79,39 +81,11 @@ export function ProsePage() {
 
       {hasAnalytics ? (
         <>
-          <div className="box group flex-1">
-            <h3 className="text-lg">Unique visitors (this month)</h3>
-            {analytics.intervals.map((interval) => {
-              return (
-                <IntervalTime key={interval.interval} interval={interval} />
-              );
-            })}
-          </div>
+          <UniqueVisitorsByTimeBox intervals={analytics.intervals} />
 
           <div className="flex gap">
-            <div className="box group flex-1">
-              <h3 className="text-lg">Top URLs</h3>
-              {analytics.top_urls.map((url) => {
-                return (
-                  <div key={url.url} className="group-h">
-                    <div>{url.url}</div>
-                    <div>{url.count}</div>
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="box group flex-1">
-              <h3 className="text-lg">Top Referers</h3>
-              {analytics.top_referers.map((url) => {
-                return (
-                  <div key={url.url}>
-                    <ExternalLink href={`//${url.url}`}>{url.url}</ExternalLink>{" "}
-                    {url.count}
-                  </div>
-                );
-              })}
-            </div>
+            <TopSiteUrls urls={analytics.top_urls} />
+            <TopReferers referers={analytics.top_referers} />
           </div>
         </>
       ) : (
