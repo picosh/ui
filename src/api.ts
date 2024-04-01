@@ -346,6 +346,13 @@ export const selectMonthlyAnalytics = createSelector(
   },
 );
 
+export const selectHasPlus = createSelector(
+  schema.features.selectTableAsList,
+  (features) => {
+    return features.find((f) => f.name === "pgs");
+  },
+);
+
 export const getPostUrl = (space: string) => (u: User, p: Post) => {
   return `https://${u.name}.${space}.sh/${p.slug}`;
 };

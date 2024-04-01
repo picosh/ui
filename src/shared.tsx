@@ -22,6 +22,7 @@ import {
   registerUser,
   schema,
   selectFeatureByName,
+  selectHasPlus,
   selectHasRegistered,
   selectPostsBySpace,
   selectPubkeysAsList,
@@ -241,7 +242,7 @@ export function SignupForm({ onSuccess }: { onSuccess: () => void }) {
 }
 
 export function PlusBox() {
-  const hasPlus = useSelector((s) => selectFeatureByName(s, { name: "pgs" }));
+  const hasPlus = useSelector(selectHasPlus);
   if (hasPlus) return null;
   return (
     <div className="group box">
@@ -674,6 +675,7 @@ export function IntervalTime({ interval }: { interval: VisitInterval }) {
 }
 
 export function AnalyticsSettings() {
+  const hasPlus = useSelector(selectHasPlus);
   const hasAnalytics = useSelector((s) =>
     selectFeatureByName(s, { name: "analytics" }),
   );
@@ -683,6 +685,22 @@ export function AnalyticsSettings() {
     dispatch(action);
   };
   const loader = useLoader(action);
+
+  const btn = hasAnalytics ? (
+    <div className="group-h">
+      <div className="font-bold">Analytics is enabled.</div>
+      <Button onClick={onToggle} variant="sm" isLoading={loader.isLoading}>
+        Disable Analytics
+      </Button>
+    </div>
+  ) : (
+    <div className="group-h">
+      <div className="font-bold">Analytics is disabled.</div>
+      <Button onClick={onToggle} variant="sm" isLoading={loader.isLoading}>
+        Enable Analytics
+      </Button>
+    </div>
+  );
 
   return (
     <div className="box group">
@@ -710,20 +728,12 @@ export function AnalyticsSettings() {
         created.
       </div>
 
-      {hasAnalytics ? (
-        <div className="group-h">
-          <div className="font-bold">Analytics is enabled.</div>
-          <Button onClick={onToggle} variant="sm" isLoading={loader.isLoading}>
-            Disable Analytics
-          </Button>
-        </div>
+      {hasPlus ? (
+        btn
       ) : (
-        <div className="group-h">
-          <div className="font-bold">Analytics is disabled.</div>
-          <Button onClick={onToggle} variant="sm" isLoading={loader.isLoading}>
-            Enable Analytics
-          </Button>
-        </div>
+        <Banner>
+          Analytics is a <Link to={plusUrl()}>pico+</Link> feature.
+        </Banner>
       )}
     </div>
   );
