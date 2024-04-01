@@ -35,7 +35,7 @@ export function ProseDetailPage() {
       {hasAnalytics ? (
         <div className="flex gap">
           <div className="box group flex-1">
-            <h3 className="text-lg">Unique visitors</h3>
+            <h3 className="text-lg">Unique visitors (this month)</h3>
             {analytics.intervals.map((interval) => {
               return (
                 <IntervalTime key={interval.interval} interval={interval} />
