@@ -10,6 +10,7 @@ import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   useApi,
+  useCache,
   useDispatch,
   useLoader,
   useLoaderSuccess,
@@ -18,7 +19,9 @@ import {
 import {
   VisitInterval,
   VisitUrl,
+  deserializeAnalytics,
   fetchOrCreateToken,
+  fetchSummaryAnalytics,
   registerUser,
   schema,
   selectFeatureByName,
@@ -26,7 +29,7 @@ import {
   selectHasRegistered,
   selectPostsBySpace,
   selectPubkeysAsList,
-  selectYearlyIntervals,
+  sortIntervalByVisitors,
   toggleAnalytics,
   useSelector,
 } from "./api";
@@ -623,6 +626,34 @@ export function UniqueVisitorsByTimeBox({
   );
 }
 
+function UrlItem({ url }: { url: VisitUrl }) {
+  const post = useSelector((s) =>
+    schema.posts.selectById(s, { id: url.post_id }),
+  );
+  const project = useSelector((s) =>
+    schema.projects.selectById(s, { id: url.project_id }),
+  );
+  let link = proseUrl();
+  let name = url.url;
+  if (url.post_id) {
+    link = proseDetailUrl(url.post_id);
+    name = post.title;
+  } else if (url.project_id) {
+    if (url.url === "/") {
+      name = project.name;
+    }
+    link = pgsDetailUrl(project.name);
+  } else {
+    name = "blog";
+  }
+
+  return (
+    <div key={`${url.url}-${url.project_id}-${url.post_id}`}>
+      <Link to={link}>{name}</Link> {url.count}
+    </div>
+  );
+}
+
 export function TopSiteUrls({ urls }: { urls: VisitUrl[] }) {
   return (
     <div className="box group flex-1">
@@ -630,9 +661,10 @@ export function TopSiteUrls({ urls }: { urls: VisitUrl[] }) {
       <div>
         {urls.map((interval) => {
           return (
-            <div key={interval.url}>
-              {interval.url} {interval.count}
-            </div>
+            <UrlItem
+              key={`${interval.url}-${interval.project_id}-${interval.post_id}`}
+              url={interval}
+            />
           );
         })}
       </div>
@@ -661,14 +693,32 @@ export function TopReferers({ referers }: { referers: VisitUrl[] }) {
   );
 }
 
+function dedupeIntervals(intervals: VisitInterval[]) {
+  const dedupe: { [key: string]: VisitInterval } = {};
+  for (const interval of intervals) {
+    let key = "blog";
+    if (interval.post_id) {
+      key = interval.post_id;
+    }
+    if (interval.project_id) {
+      key = interval.project_id;
+    }
+    if (dedupe[key]) {
+      dedupe[key].visitors += interval.visitors;
+    } else {
+      dedupe[key] = { ...interval };
+    }
+  }
+  return Object.values(dedupe).sort(sortIntervalByVisitors);
+}
+
 export function SummaryAnalyticsView() {
   const hasAnalytics = useSelector((s) =>
     selectFeatureByName(s, { name: "analytics" }),
   );
-  const summary = useSelector(schema.analyticsYearly.select);
-  const intervals = useSelector(selectYearlyIntervals).slice(0, 10);
-  const urls = [...summary.top_urls].sort((a, b) => b.count - a.count);
-  const refs = [...summary.top_referers].sort((a, b) => b.count - a.count);
+  const { data } = useCache(fetchSummaryAnalytics());
+  const { intervals, urls, refs } = deserializeAnalytics(data);
+  const finIntervals = dedupeIntervals(intervals).slice(0, 15);
 
   if (!hasAnalytics) {
     return <AnalyticsSettings />;
@@ -676,7 +726,7 @@ export function SummaryAnalyticsView() {
 
   return (
     <div className="group">
-      <UniqueVisitorsBox intervals={intervals} />
+      <UniqueVisitorsBox intervals={finIntervals} />
 
       <div className="flex gap">
         <TopSiteUrls urls={urls} />

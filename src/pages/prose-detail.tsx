@@ -1,9 +1,9 @@
 import {
-  fetchMonthlyAnalyticsByBlog,
+  deserializeAnalytics,
+  fetchMonthlyAnalyticsByPost,
   getProseUrl,
   schema,
   selectFeatureByName,
-  selectMonthlyAnalytics,
   useSelector,
 } from "@app/api";
 import { prettyDate } from "@app/date";
@@ -17,7 +17,7 @@ import {
   UniqueVisitorsByTimeBox,
 } from "@app/shared";
 import { useParams } from "react-router";
-import { useQuery } from "starfx/react";
+import { useCache } from "starfx/react";
 
 export function ProseDetailPage() {
   const { id = "" } = useParams();
@@ -25,8 +25,8 @@ export function ProseDetailPage() {
     selectFeatureByName(s, { name: "analytics" }),
   );
   const post = useSelector((s) => schema.posts.selectById(s, { id }));
-  useQuery(fetchMonthlyAnalyticsByBlog());
-  const analytics = useSelector(selectMonthlyAnalytics);
+  const { data } = useCache(fetchMonthlyAnalyticsByPost({ postId: id }));
+  const analytics = deserializeAnalytics(data);
   const user = useSelector(schema.user.select);
 
   return (
@@ -68,7 +68,7 @@ export function ProseDetailPage() {
       {hasAnalytics ? (
         <div className="group">
           <UniqueVisitorsByTimeBox intervals={analytics.intervals} />
-          <TopReferers referers={analytics.top_referers} />
+          <TopReferers referers={analytics.refs} />
         </div>
       ) : (
         <AnalyticsSettings />

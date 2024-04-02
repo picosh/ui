@@ -123,16 +123,6 @@ export const [schema, initialState] = createSchema({
       tags: [] as string[],
     },
   }),
-  analyticsYearly: slice.obj<SummaryAnalytics>({
-    intervals: [],
-    top_urls: [],
-    top_referers: [],
-  }),
-  analyticsMonthly: slice.obj<SummaryAnalytics>({
-    intervals: [],
-    top_urls: [],
-    top_referers: [],
-  }),
 });
 export type WebState = typeof initialState;
 export type User = WebState["user"];
@@ -323,28 +313,22 @@ export const selectProjectByName = createSelector(
     projects.find((p) => p.name === name) || schema.projects.empty,
 );
 
-export const selectYearlyIntervals = createSelector(
-  schema.analyticsYearly.select,
-  (summary) => {
-    return [...summary.intervals].sort((a, b) => b.visitors - a.visitors);
-  },
-);
+export const sortIntervalByVisitors = (a: VisitInterval, b: VisitInterval) =>
+  b.visitors - a.visitors;
+export const sortVisitsByCounts = (a: VisitUrl, b: VisitUrl) =>
+  b.count - a.count;
 
-export const selectMonthlyAnalytics = createSelector(
-  schema.analyticsMonthly.select,
-  (analytics) => {
-    const intervals = [...analytics.intervals];
-    const top_urls = [...analytics.top_urls].sort((a, b) => b.count - a.count);
-    const top_referers = [...analytics.top_referers].sort(
-      (a, b) => b.count - a.count,
-    );
-    return {
-      intervals,
-      top_urls,
-      top_referers,
-    };
-  },
-);
+export const deserializeAnalytics = (
+  data: Partial<SummaryAnalytics> | null = {},
+) => {
+  const dataIntervals = data?.intervals || [];
+  const dataUrls = data?.top_urls || [];
+  const dataReferers = data?.top_referers || [];
+  const intervals = [...dataIntervals].sort(sortIntervalByVisitors);
+  const urls = [...dataUrls].sort(sortVisitsByCounts);
+  const refs = [...dataReferers].sort(sortVisitsByCounts);
+  return { intervals, urls, refs };
+};
 
 export const selectHasPlus = createSelector(
   schema.features.selectTableAsList,
@@ -691,51 +675,20 @@ export const deleteToken = api.delete<{ id: string }>(
 
 export const fetchSummaryAnalytics = api.get<never, SummaryAnalytics>(
   "/analytics/year",
-  function* (ctx, next) {
-    yield* next();
-    if (!ctx.json.ok) {
-      return;
-    }
-
-    yield* schema.update(schema.analyticsYearly.set(ctx.json.value));
-  },
+  api.cache(),
 );
-
 export const fetchMonthlyAnalyticsByProject = api.get<
   { projectId: string },
   SummaryAnalytics
->("/projects/:projectId/analytics", function* (ctx, next) {
-  yield* next();
-  if (!ctx.json.ok) {
-    return;
-  }
-
-  yield* schema.update(schema.analyticsMonthly.set(ctx.json.value));
-});
-
+>("/projects/:projectId/analytics", api.cache());
 export const fetchMonthlyAnalyticsByBlog = api.get<never, SummaryAnalytics>(
   "/posts/analytics",
-  function* (ctx, next) {
-    yield* next();
-    if (!ctx.json.ok) {
-      return;
-    }
-
-    yield* schema.update(schema.analyticsMonthly.set(ctx.json.value));
-  },
+  api.cache(),
 );
-
 export const fetchMonthlyAnalyticsByPost = api.get<
   { postId: string },
   SummaryAnalytics
->("/posts/:postId/analytics", function* (ctx, next) {
-  yield* next();
-  if (!ctx.json.ok) {
-    return;
-  }
-
-  yield* schema.update(schema.analyticsMonthly.set(ctx.json.value));
-});
+>("/posts/:postId/analytics", api.cache());
 
 export const enableAnalytics = api.post<never, FeatureFlag>(
   "/features",

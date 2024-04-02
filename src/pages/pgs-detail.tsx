@@ -1,5 +1,6 @@
 import {
   ProjectObject,
+  deserializeAnalytics,
   fetchMonthlyAnalyticsByProject,
   fetchProjectObjects,
   getProjectUrl,
@@ -7,7 +8,6 @@ import {
   objectSort,
   schema,
   selectFeatureByName,
-  selectMonthlyAnalytics,
   selectObjectsByProjectName,
   selectProjectByName,
   useSelector,
@@ -27,7 +27,7 @@ import {
 import { useState } from "react";
 import { useParams } from "react-router";
 import { Link, useSearchParams } from "react-router-dom";
-import { useQuery } from "starfx/react";
+import { useCache, useQuery } from "starfx/react";
 
 export function PgsDetailPage() {
   const { name = "" } = useParams();
@@ -42,7 +42,6 @@ export function PgsDetailPage() {
   const url = getProjectUrl(user, { name });
   const project = useSelector((s) => selectProjectByName(s, { name }));
   useQuery(fetchProjectObjects({ name: project.project_dir }));
-  useQuery(fetchMonthlyAnalyticsByProject({ projectId: project.id }));
   const objects = useSelector((s) =>
     selectObjectsByProjectName(s, { name: project.project_dir }),
   )
@@ -75,7 +74,10 @@ export function PgsDetailPage() {
     setSortDir(sortDir === "asc" ? "desc" : "asc");
     setSortBy(by);
   };
-  const analytics = useSelector(selectMonthlyAnalytics);
+  const { data } = useCache(
+    fetchMonthlyAnalyticsByProject({ projectId: project.id }),
+  );
+  const analytics = deserializeAnalytics(data);
   const projectName = project.name;
 
   return (
@@ -120,8 +122,8 @@ export function PgsDetailPage() {
           <UniqueVisitorsByTimeBox intervals={analytics.intervals} />
 
           <div className="flex gap">
-            <TopSiteUrls urls={analytics.top_urls} />
-            <TopReferers referers={analytics.top_referers} />
+            <TopSiteUrls urls={analytics.urls} />
+            <TopReferers referers={analytics.refs} />
           </div>
         </>
       ) : (

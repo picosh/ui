@@ -1,10 +1,10 @@
 import {
+  deserializeAnalytics,
   fetchMonthlyAnalyticsByBlog,
   fetchPosts,
   getProseUrl,
   schema,
   selectFeatureByName,
-  selectMonthlyAnalytics,
   selectPostsBySpace,
   useSelector,
 } from "@app/api";
@@ -19,7 +19,7 @@ import {
   UniqueVisitorsByTimeBox,
 } from "@app/shared";
 import { Link } from "react-router-dom";
-import { useQuery } from "starfx/react";
+import { useCache, useQuery } from "starfx/react";
 
 function ProseTable() {
   const user = useSelector(schema.user.select);
@@ -71,8 +71,8 @@ export function ProsePage() {
     selectFeatureByName(s, { name: "analytics" }),
   );
   useQuery(fetchPosts({ space: "prose" }));
-  useQuery(fetchMonthlyAnalyticsByBlog());
-  const analytics = useSelector(selectMonthlyAnalytics);
+  const { data } = useCache(fetchMonthlyAnalyticsByBlog());
+  const { intervals, urls, refs } = deserializeAnalytics(data);
 
   return (
     <div className="group">
@@ -80,11 +80,11 @@ export function ProsePage() {
 
       {hasAnalytics ? (
         <>
-          <UniqueVisitorsByTimeBox intervals={analytics.intervals} />
+          <UniqueVisitorsByTimeBox intervals={intervals} />
 
           <div className="flex gap">
-            <TopSiteUrls urls={analytics.top_urls} />
-            <TopReferers referers={analytics.top_referers} />
+            <TopSiteUrls urls={urls} />
+            <TopReferers referers={refs} />
           </div>
         </>
       ) : (
