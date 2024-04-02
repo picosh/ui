@@ -3,6 +3,7 @@ import {
   fetchMonthlyAnalyticsByProject,
   fetchProjectObjects,
   getProjectUrl,
+  isProjectLinked,
   objectSort,
   schema,
   selectFeatureByName,
@@ -12,7 +13,7 @@ import {
   useSelector,
 } from "@app/api";
 import { usePaginate } from "@app/paginate";
-import { pgsUrl } from "@app/router";
+import { pgsDetailUrl, pgsUrl } from "@app/router";
 import {
   AnalyticsSettings,
   Breadcrumbs,
@@ -24,7 +25,7 @@ import {
 } from "@app/shared";
 import { useState } from "react";
 import { useParams } from "react-router";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useQuery } from "starfx/react";
 
 export function PgsDetailPage() {
@@ -74,7 +75,7 @@ export function PgsDetailPage() {
     setSortBy(by);
   };
   const analytics = useSelector(selectMonthlyAnalytics);
-  const projectName = `${project.name} (alias: ${project.project_dir})`;
+  const projectName = project.name;
 
   return (
     <div className="group">
@@ -82,6 +83,36 @@ export function PgsDetailPage() {
         crumbs={[{ href: pgsUrl(), text: "pgs" }]}
         text={projectName}
       />
+
+      <div className="box group">
+        <dl style={{ columnCount: 2 }}>
+          <dt>ID</dt>
+          <dd>
+            <code>{project.id}</code>
+          </dd>
+
+          <dt>Links To</dt>
+          <dd>
+            {isProjectLinked(project) ? (
+              <Link to={pgsDetailUrl(project.project_dir)}>
+                {project.project_dir}
+              </Link>
+            ) : null}
+          </dd>
+
+          <dt>Created At</dt>
+          <dd>{new Date(project.created_at).toDateString()}</dd>
+
+          <dt>Updated At</dt>
+          <dd>{new Date(project.updated_at).toDateString()}</dd>
+
+          <dt>ACL Type</dt>
+          <dd>{project.acl.type}</dd>
+
+          <dt>ACL</dt>
+          <dd>{project.acl.data?.join(",") || "N/A"}</dd>
+        </dl>
+      </div>
 
       {hasAnalytics ? (
         <>

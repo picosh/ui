@@ -353,6 +353,10 @@ export const selectHasPlus = createSelector(
   },
 );
 
+export function isProjectLinked(project: Project): boolean {
+  return project.project_dir !== project.name;
+}
+
 export const getPostUrl = (space: string) => (u: User, p: Post) => {
   return `https://${u.name}.${space}.sh/${p.slug}`;
 };

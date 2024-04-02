@@ -1,15 +1,18 @@
 import {
   fetchMonthlyAnalyticsByBlog,
+  getProseUrl,
   schema,
   selectFeatureByName,
   selectMonthlyAnalytics,
   useSelector,
 } from "@app/api";
+import { prettyDate } from "@app/date";
 import { proseUrl } from "@app/router";
 import {
   AnalyticsSettings,
   Breadcrumbs,
   Button,
+  ExternalLink,
   TopReferers,
   UniqueVisitorsByTimeBox,
 } from "@app/shared";
@@ -24,6 +27,7 @@ export function ProseDetailPage() {
   const post = useSelector((s) => schema.posts.selectById(s, { id }));
   useQuery(fetchMonthlyAnalyticsByBlog());
   const analytics = useSelector(selectMonthlyAnalytics);
+  const user = useSelector(schema.user.select);
 
   return (
     <div className="group">
@@ -31,6 +35,35 @@ export function ProseDetailPage() {
         crumbs={[{ href: proseUrl(), text: "prose" }]}
         text={post.title}
       />
+
+      <div className="box group">
+        <dl style={{ columnCount: 2 }}>
+          <dt>ID</dt>
+          <dd>
+            <code>{post.id}</code>
+          </dd>
+
+          <dt>Site</dt>
+          <dd>
+            <ExternalLink href={getProseUrl(user, post)}>View</ExternalLink>
+          </dd>
+
+          <dt>Description</dt>
+          <dd>{post.description}</dd>
+
+          <dt>Publish At</dt>
+          <dd>{prettyDate(post.publish_at)}</dd>
+
+          <dt>Created At</dt>
+          <dd>{prettyDate(post.created_at)}</dd>
+
+          <dt>Updated At</dt>
+          <dd>{prettyDate(post.updated_at)}</dd>
+
+          <dt>Listed</dt>
+          <dd>{post.hidden ? "No" : "Yes"}</dd>
+        </dl>
+      </div>
 
       {hasAnalytics ? (
         <div className="flex gap">
