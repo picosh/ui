@@ -30,6 +30,8 @@ import {
   toggleAnalytics,
   useSelector,
 } from "./api";
+import { LineChart } from "./chart";
+import { prettyDate } from "./date";
 
 const bytesToMb = (num: number) => num / 1000 / 1000;
 const bytesToGb = (num: number) => bytesToMb(num) / 1000;
@@ -578,22 +580,55 @@ export function UniqueVisitorsBox({
   );
 }
 
+type DataVisualization = "chart" | "table";
 export function UniqueVisitorsByTimeBox({
   intervals,
 }: { intervals: VisitInterval[] }) {
+  const [visualize, setVisualize] = useState<DataVisualization>("chart");
+  const data = intervals.map((int) => ({
+    label: int.interval,
+    value: int.visitors,
+  }));
+
   return (
     <div className="box group flex-1">
       <h3 className="text-lg">Unique Visitors (this month)</h3>
-      <div>
-        {intervals.map((interval) => {
-          return (
-            <IntervalTime
-              key={`${interval.interval}${interval.post_id}${interval.project_id}`}
-              interval={interval}
-            />
-          );
-        })}
+
+      <div className="group-h">
+        <Button
+          variant="sm"
+          onClick={() => setVisualize("chart")}
+          disabled={visualize === "chart"}
+        >
+          chart
+        </Button>
+        <Button
+          variant="sm"
+          onClick={() => setVisualize("table")}
+          disabled={visualize === "table"}
+        >
+          table
+        </Button>
       </div>
+
+      {visualize === "table" ? (
+        <div>
+          {intervals.map((interval) => {
+            return (
+              <IntervalTime
+                key={`${interval.interval}${interval.post_id}${interval.project_id}`}
+                interval={interval}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <LineChart
+          id="unique-visitors-chart"
+          title="Unique Visitors (this month)"
+          data={data}
+        />
+      )}
     </div>
   );
 }
@@ -661,15 +696,10 @@ export function SummaryAnalyticsView() {
   );
 }
 
-const truncateDate = (dateStr: string): string => {
-  const ds = dateStr.split("T");
-  return ds[0];
-};
-
 export function IntervalTime({ interval }: { interval: VisitInterval }) {
   return (
     <div>
-      {truncateDate(interval.interval)} {interval.visitors}
+      {prettyDate(interval.interval)} {interval.visitors}
     </div>
   );
 }

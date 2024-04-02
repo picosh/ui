@@ -66,7 +66,7 @@ export function ProseDetailPage() {
       </div>
 
       {hasAnalytics ? (
-        <div className="flex gap">
+        <div className="group">
           <UniqueVisitorsByTimeBox intervals={analytics.intervals} />
           <TopReferers referers={analytics.top_referers} />
         </div>

@@ -30,6 +30,17 @@ button, input[type="submit"], input[type="reset"] {
 	outline: inherit;
 }
 
+button:disabled {
+  border: 2px solid var(--grey);
+  color: var(--grey);
+}
+
+button[disabled]:hover {
+  border: 2px solid var(--grey);
+  color: var(--grey);
+  cursor: default;
+}
+
 label {
   font-weight: bold;
 }
