@@ -12,6 +12,7 @@ import {
   selectProjectByName,
   useSelector,
 } from "@app/api";
+import { prettyDate } from "@app/date";
 import { usePaginate } from "@app/paginate";
 import { pgsDetailUrl, pgsUrl } from "@app/router";
 import {
@@ -101,10 +102,10 @@ export function PgsDetailPage() {
           </dd>
 
           <dt>Created At</dt>
-          <dd>{new Date(project.created_at).toDateString()}</dd>
+          <dd>{prettyDate(project.created_at)}</dd>
 
           <dt>Updated At</dt>
-          <dd>{new Date(project.updated_at).toDateString()}</dd>
+          <dd>{prettyDate(project.updated_at)}</dd>
 
           <dt>ACL Type</dt>
           <dd>{project.acl.type}</dd>

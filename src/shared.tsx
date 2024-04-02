@@ -289,9 +289,7 @@ export function FeaturesTable() {
               <td className="text-left">
                 <div className="pill">{feature.name}</div>
               </td>
-              <td className="text-left">
-                {new Date(feature.expires_at).toDateString()}
-              </td>
+              <td className="text-left">{prettyDate(feature.expires_at)}</td>
               <td className="text-center">
                 {bytesToGb(feature.data.storage_max).toFixed(2)}
               </td>
@@ -338,9 +336,7 @@ export function PubkeysTable() {
               <td className="text-center">
                 {pubkey.key === user.fingerprint ? "*" : ""}{" "}
               </td>
-              <td className="text-left">
-                {new Date(pubkey.created_at).toDateString()}
-              </td>
+              <td className="text-left">{prettyDate(pubkey.created_at)}</td>
               <td className="text-right">
                 <Link
                   to={upsertPubkeyUrl(pubkey.id)}
@@ -381,12 +377,8 @@ export function TokensTable() {
           return (
             <tr key={token.id}>
               <td className="text-left">{token.name}</td>
-              <td className="text-left">
-                {new Date(token.created_at).toDateString()}
-              </td>
-              <td className="text-left">
-                {new Date(token.expires_at).toDateString()}
-              </td>
+              <td className="text-left">{prettyDate(token.created_at)}</td>
+              <td className="text-left">{prettyDate(token.expires_at)}</td>
               <td className="text-right">
                 <Link
                   to={upsertTokenUrl(token.id)}
@@ -431,9 +423,7 @@ export function PostsTable({ space }: { space: string }) {
               <td className="text-center">
                 {post.hidden ? "Unlisted" : "Listed"}
               </td>
-              <td className="text-left">
-                {new Date(post.publish_at).toDateString()}
-              </td>
+              <td className="text-left">{prettyDate(post.publish_at)}</td>
             </tr>
           );
         })}

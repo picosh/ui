@@ -8,6 +8,7 @@ import {
   selectPostsBySpace,
   useSelector,
 } from "@app/api";
+import { prettyDate } from "@app/date";
 import { proseDetailUrl } from "@app/router";
 import {
   AnalyticsSettings,
@@ -30,7 +31,7 @@ function ProseTable() {
           <th className="text-left">Title</th>
           <th className="text-center">Site</th>
           <th className="text-center">Status</th>
-          <th className="text-left">Published At</th>
+          <th className="text-left">Publish At</th>
         </tr>
       </thead>
       <tbody>
@@ -56,9 +57,7 @@ function ProseTable() {
               <td className="text-center">
                 {post.hidden ? "Unlisted" : "Listed"}
               </td>
-              <td className="text-left">
-                {new Date(post.publish_at).toDateString()}
-              </td>
+              <td className="text-left">{prettyDate(post.publish_at)}</td>
             </tr>
           );
         })}

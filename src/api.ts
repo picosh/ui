@@ -228,9 +228,9 @@ export const selectPostsBySpace = createSelector(
     posts
       .filter((post) => post.space === space)
       .sort((a, b) => {
-        const aDate = new Date(a.created_at);
-        const bDate = new Date(b.created_at);
-        return bDate.getTime() - aDate.getTime();
+        const aDate = new Date(a.created_at).getTime();
+        const bDate = new Date(b.created_at).getTime();
+        return bDate - aDate;
       }),
 );
 
@@ -238,9 +238,9 @@ export const selectProjectsAsList = createSelector(
   schema.projects.selectTableAsList,
   (projects) =>
     [...projects].sort((a, b) => {
-      const aDate = new Date(a.updated_at);
-      const bDate = new Date(b.updated_at);
-      return bDate.getTime() - aDate.getTime();
+      const aDate = new Date(a.updated_at).getTime();
+      const bDate = new Date(b.updated_at).getTime();
+      return bDate - aDate;
     }),
 );
 

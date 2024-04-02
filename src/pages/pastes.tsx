@@ -5,6 +5,7 @@ import {
   selectPostsBySpace,
   useSelector,
 } from "@app/api";
+import { prettyDate } from "@app/date";
 import { PageHeader } from "@app/shared";
 import { useQuery } from "starfx/react";
 
@@ -37,9 +38,7 @@ function PastesTable() {
               <td className="text-center">
                 {post.hidden ? "Unlisted" : "Listed"}
               </td>
-              <td className="text-left">
-                {new Date(post.expires_at).toDateString()}
-              </td>
+              <td className="text-left">{prettyDate(post.expires_at)}</td>
             </tr>
           );
         })}

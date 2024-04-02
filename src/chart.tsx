@@ -84,22 +84,40 @@ export const LineChart = ({
     return x;
   };
 
-  const plot = () => {
+  const plot = (line = true) => {
     // if the entire dataset is the same value then draw a line
     if (sameVal) {
       const d = data[0].value;
       const y = calcY(d);
-      return <path d={`M 0,${y} H ${width}`} stroke={pointColor} />;
+      return <path d={`M 0,${y} H${width}`} stroke={pointColor} />;
     }
-
-    // plot the points
-    return data.map((d, i) => {
+    const path = data.reduce((acc, d, i) => {
       const x = calcX(i);
       const y = calcY(d.value);
-      return (
-        <circle key={i} cx={x} cy={y} r={strokeWidthPoint} fill={pointColor} />
-      );
-    });
+      if (i === 0) return `M${x},${y}`;
+      return `${acc} L${x},${y}`;
+    }, "");
+
+    // plot the points
+    return (
+      <g>
+        {line ? <path d={path} style={{ stroke: pointColor }} /> : null}
+
+        {data.map((d, i) => {
+          const x = calcX(i);
+          const y = calcY(d.value);
+          return (
+            <circle
+              key={`${x},${y}`}
+              cx={x}
+              cy={y}
+              r={strokeWidthPoint}
+              fill={pointColor}
+            />
+          );
+        })}
+      </g>
+    );
   };
 
   const yGrid = (grid = true) => {

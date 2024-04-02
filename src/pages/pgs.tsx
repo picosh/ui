@@ -7,6 +7,7 @@ import {
   selectProjectsAsList,
   useSelector,
 } from "@app/api";
+import { prettyDate } from "@app/date";
 import { pgsDetailUrl } from "@app/router";
 import { ExternalLink, PageHeader } from "@app/shared";
 import { useState } from "react";
@@ -69,7 +70,7 @@ function ProjectsTable() {
   const [params, setParams] = useSearchParams();
   const search = params.get("search") || "";
   const [sortDir, setSortDir] = useState<SortDir>("desc");
-  const [sortBy, setSortBy] = useState<keyof Project>("created_at");
+  const [sortBy, setSortBy] = useState<keyof Project>("updated_at");
   const sorter = (by: keyof Project) => {
     setSortDir(sortDir === "asc" ? "desc" : "asc");
     setSortBy(by);
@@ -165,12 +166,8 @@ function ProjectsTable() {
                     </Link>
                   ) : null}
                 </td>
-                <td className="text-left">
-                  {new Date(project.created_at).toDateString()}
-                </td>
-                <td className="text-left">
-                  {new Date(project.updated_at).toDateString()}
-                </td>
+                <td className="text-left">{prettyDate(project.created_at)}</td>
+                <td className="text-left">{prettyDate(project.updated_at)}</td>
                 <td className="text-center">{type}</td>
                 <td className="text-left">{data?.join(", ")}</td>
               </tr>
