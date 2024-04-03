@@ -525,7 +525,7 @@ function IntervalItem({ interval }: { interval: VisitInterval }) {
   return (
     <div className="group-h">
       <IntervalTitle interval={interval} />
-      {interval.visitors}
+      <code>{interval.visitors}</code>
     </div>
   );
 }
@@ -663,7 +663,7 @@ function UrlItem({ url }: { url: VisitUrl }) {
 
   return (
     <div key={`${url.url}-${url.project_id}-${url.post_id}`}>
-      <Link to={link}>{name}</Link> {url.count}
+      <Link to={link}>{name}</Link> <code>{url.count}</code>
     </div>
   );
 }
@@ -698,7 +698,7 @@ export function TopReferers({ referers }: { referers: VisitUrl[] }) {
               <ExternalLink href={`//${interval.url}`}>
                 {interval.url}
               </ExternalLink>{" "}
-              {interval.count}
+              <code>{interval.count}</code>
             </div>
           );
         })}
@@ -753,7 +753,7 @@ export function SummaryAnalyticsView() {
 export function IntervalTime({ interval }: { interval: VisitInterval }) {
   return (
     <div>
-      {prettyDate(interval.interval)} {interval.visitors}
+      {prettyDate(interval.interval)} <code>{interval.visitors}</code>
     </div>
   );
 }
