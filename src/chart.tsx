@@ -5,28 +5,19 @@ export interface Point {
   value: number;
 }
 
-const isSameVal = (data: number[]) => {
-  let prev = -1;
-  for (let i = 0; i < data.length; i += 1) {
-    const d = data[i];
-    if (i === 0) {
-      prev = d;
-      continue;
-    }
-
-    if (d !== prev) {
-      return false;
-    }
-  }
-
-  return true;
-};
-
 export const LineChart = ({
   id,
   data,
   title,
-}: { id: string; data: Point[]; title: string }) => {
+  onHover = (_: Point) => {},
+  selected = "",
+}: {
+  id: string;
+  data: Point[];
+  title: string;
+  onHover?: (p: Point) => void;
+  selected?: string;
+}) => {
   const xMax = data.length;
   if (data.length === 0) {
     return <div>no data</div>;
@@ -40,6 +31,7 @@ export const LineChart = ({
   const gridYColor = "#6a708e";
   const gridAxisColor = "#6a708e";
   const pointColor = "#bd93f9";
+  const pointSelectedColor = "#ff80bf";
   const fontColor = "#f2f2f2";
 
   const h = 100;
@@ -49,8 +41,6 @@ export const LineChart = ({
   const height = h - margin.top - margin.bottom;
   const yValues = data.map((d) => d.value);
 
-  // just grab the first dataset for now
-  const sameVal = isSameVal(yValues);
   // find the max Y value
   const ySort = [...yValues].sort();
   let dataMaxY = ySort[ySort.length - 1];
@@ -85,12 +75,6 @@ export const LineChart = ({
   };
 
   const plot = (line = true) => {
-    // if the entire dataset is the same value then draw a line
-    if (sameVal) {
-      const d = data[0].value;
-      const y = calcY(d);
-      return <path d={`M 0,${y} H${width}`} stroke={pointColor} />;
-    }
     const path = data.reduce((acc, d, i) => {
       const x = calcX(i);
       const y = calcY(d.value);
@@ -101,19 +85,31 @@ export const LineChart = ({
     // plot the points
     return (
       <g>
-        {line ? <path d={path} style={{ stroke: pointColor }} /> : null}
+        {line ? (
+          <path d={path} style={{ stroke: pointColor, fillOpacity: 0 }} />
+        ) : null}
 
         {data.map((d, i) => {
           const x = calcX(i);
           const y = calcY(d.value);
+          const isSel = selected === d.label;
           return (
-            <circle
-              key={`${x},${y}`}
-              cx={x}
-              cy={y}
-              r={strokeWidthPoint}
-              fill={pointColor}
-            />
+            <g key={`${x},${y}`}>
+              <circle
+                cx={x}
+                cy={y}
+                r={40}
+                onMouseEnter={() => onHover(d)}
+                className="cursor-pointer"
+                fillOpacity={0}
+              />
+              <circle
+                cx={x}
+                cy={y}
+                r={isSel ? 4 : strokeWidthPoint}
+                fill={isSel ? pointSelectedColor : pointColor}
+              />
+            </g>
           );
         })}
       </g>

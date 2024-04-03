@@ -33,7 +33,7 @@ import {
   toggleAnalytics,
   useSelector,
 } from "./api";
-import { LineChart } from "./chart";
+import { LineChart, Point } from "./chart";
 import { prettyDate } from "./date";
 
 const bytesToMb = (num: number) => num / 1000 / 1000;
@@ -582,6 +582,7 @@ export function UniqueVisitorsByTimeBox({
     label: int.interval,
     value: int.visitors,
   }));
+  const [point, setPoint] = useState<Point>({ label: "", value: 0 });
 
   return (
     <div className="box group flex-1">
@@ -602,6 +603,12 @@ export function UniqueVisitorsByTimeBox({
         >
           table
         </Button>
+
+        {point.label ? (
+          <div>
+            ({prettyDate(point.label)}, <code>{point.value}</code>)
+          </div>
+        ) : null}
       </div>
 
       {visualize === "table" ? (
@@ -620,6 +627,8 @@ export function UniqueVisitorsByTimeBox({
           id="unique-visitors-chart"
           title="Unique Visitors (this month)"
           data={data}
+          onHover={(p) => setPoint(p)}
+          selected={point.label}
         />
       )}
     </div>
