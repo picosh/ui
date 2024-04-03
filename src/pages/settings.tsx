@@ -2,6 +2,7 @@ import { fetchFeatures, fetchPubkeys, fetchTokens } from "@app/api";
 import { upsertPubkeyUrl, upsertTokenUrl } from "@app/router";
 import {
   AnalyticsSettings,
+  ExternalLink,
   FeaturesTable,
   PubkeysTable,
   RssBox,
@@ -24,15 +25,21 @@ export function SettingsPage() {
       <div className="group-h items-center">
         <h2 className="text-xl p-0">Public Keys</h2>
         <Link to={upsertPubkeyUrl()} className="btn-link-sm text-sm">
-          Create
+          create
         </Link>
       </div>
       <PubkeysTable />
 
       <div className="group-h items-center">
         <h2 className="text-xl p-0">Tokens</h2>
+        <ExternalLink
+          href="https://pico.sh/api-token"
+          className="btn-link-sm text-sm"
+        >
+          docs
+        </ExternalLink>
         <Link to={upsertTokenUrl()} className="btn-link-sm text-sm">
-          Create
+          create
         </Link>
       </div>
       <TokensTable />
@@ -41,6 +48,10 @@ export function SettingsPage() {
       <AnalyticsSettings />
 
       <h2 className="text-xl">Features Enabled</h2>
+      <div>
+        Features are how we control what users have access to on the pico
+        platform. They always have an expiration date.
+      </div>
       <FeaturesTable />
 
       <h2 className="text-xl">Notifications</h2>

@@ -438,17 +438,22 @@ export function PostsTable({ space }: { space: string }) {
 export function UserBox() {
   const user = useSelector(schema.user.select);
   return (
-    <div className="box">
-      <div className="font-bold">pubkey</div>
-      <div>
-        <PubkeyView pubkey={user.fingerprint} />
-      </div>
+    <dl className="box">
+      <dt className="font-bold">id</dt>
+      <dd>
+        <code className="text-xs">{user.id}</code>
+      </dd>
 
-      <div className="font-bold">username</div>
-      <div>
+      <dt className="font-bold">pubkey</dt>
+      <dd>
+        <PubkeyView pubkey={user.fingerprint} />
+      </dd>
+
+      <dt className="font-bold">username</dt>
+      <dd>
         <code>{user.name}</code>
-      </div>
-    </div>
+      </dd>
+    </dl>
   );
 }
 
