@@ -123,6 +123,10 @@ export function Button({
   );
 }
 
+export const Count = ({ value }: { value: number }) => {
+  return <code>{value.toLocaleString()}</code>;
+};
+
 export const PubkeyView = ({ pubkey }: { pubkey: string }) => {
   return (
     <div className="text-xs pill" title={pubkey}>
@@ -525,7 +529,7 @@ function IntervalItem({ interval }: { interval: VisitInterval }) {
   return (
     <div className="group-h">
       <IntervalTitle interval={interval} />
-      <code>{interval.visitors}</code>
+      <Count value={interval.visitors} />
     </div>
   );
 }
@@ -611,7 +615,7 @@ export function UniqueVisitorsByTimeBox({
 
         {point.label ? (
           <div>
-            ({prettyDate(point.label)}, <code>{point.value}</code>)
+            ({prettyDate(point.label)}, <Count value={point.value} />)
           </div>
         ) : null}
       </div>
@@ -663,7 +667,7 @@ function UrlItem({ url }: { url: VisitUrl }) {
 
   return (
     <div key={`${url.url}-${url.project_id}-${url.post_id}`}>
-      <Link to={link}>{name}</Link> <code>{url.count}</code>
+      <Link to={link}>{name}</Link> <Count value={url.count} />
     </div>
   );
 }
@@ -698,7 +702,7 @@ export function TopReferers({ referers }: { referers: VisitUrl[] }) {
               <ExternalLink href={`//${interval.url}`}>
                 {interval.url}
               </ExternalLink>{" "}
-              <code>{interval.count}</code>
+              <Count value={interval.count} />
             </div>
           );
         })}
@@ -753,7 +757,7 @@ export function SummaryAnalyticsView() {
 export function IntervalTime({ interval }: { interval: VisitInterval }) {
   return (
     <div>
-      {prettyDate(interval.interval)} <code>{interval.visitors}</code>
+      {prettyDate(interval.interval)} <Count value={interval.visitors} />
     </div>
   );
 }

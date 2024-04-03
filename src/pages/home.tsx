@@ -1,5 +1,10 @@
 import { selectStats } from "@app/api";
-import { ExternalLink, PlusBox, SummaryAnalyticsView } from "@app/shared";
+import {
+  Count,
+  ExternalLink,
+  PlusBox,
+  SummaryAnalyticsView,
+} from "@app/shared";
 import { useSelector } from "starfx/react";
 
 export function HomePage() {
@@ -24,10 +29,18 @@ export function HomePage() {
         <div className="box group flex-1">
           <h3 className="text-lg p-0">Stats</h3>
           <ul className="m-0">
-            <li>Projects: {stats.projects}</li>
-            <li>Prose: {stats.prose}</li>
-            <li>Pastes: {stats.pastes}</li>
-            <li>Feeds: {stats.feeds}</li>
+            <li>
+              Projects: <Count value={stats.projects} />
+            </li>
+            <li>
+              Prose: <Count value={stats.prose} />
+            </li>
+            <li>
+              Pastes: <Count value={stats.pastes} />
+            </li>
+            <li>
+              Feeds: <Count value={stats.feeds} />
+            </li>
           </ul>
         </div>
       </div>
