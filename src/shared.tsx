@@ -567,7 +567,7 @@ export function UniqueVisitorsBox({
 }: { intervals: VisitInterval[] }) {
   return (
     <div className="box group flex-1">
-      <h3 className="text-lg">Unique Visitors (this month)</h3>
+      <h3 className="text-lg">Unique Visitors</h3>
       <div>
         {intervals.map((interval) => {
           return (
@@ -595,7 +595,7 @@ export function UniqueVisitorsByTimeBox({
 
   return (
     <div className="box group flex-1">
-      <h3 className="text-lg">Unique Visitors (this month)</h3>
+      <h3 className="text-lg">Unique Visitors</h3>
 
       <div className="group-h">
         <Button
@@ -675,7 +675,7 @@ function UrlItem({ url }: { url: VisitUrl }) {
 export function TopSiteUrls({ urls }: { urls: VisitUrl[] }) {
   return (
     <div className="box group flex-1">
-      <h3 className="text-lg">Top Site URLs (this month)</h3>
+      <h3 className="text-lg">Top Site URLs</h3>
       <div>
         {urls.map((interval) => {
           return (
@@ -693,7 +693,7 @@ export function TopSiteUrls({ urls }: { urls: VisitUrl[] }) {
 export function TopReferers({ referers }: { referers: VisitUrl[] }) {
   return (
     <div className="box group flex-1">
-      <h3 className="text-lg">Top Referers (this month)</h3>
+      <h3 className="text-lg">Top Referers</h3>
       <div>
         {referers.map((interval, idx) => {
           if (!interval.url) return null;
@@ -746,6 +746,7 @@ export function SummaryAnalyticsView() {
 
   return (
     <div className="group">
+      <h2 className="text-xl">Analytics (this year)</h2>
       <UniqueVisitorsBox intervals={finIntervals} />
 
       <div className="flex gap">

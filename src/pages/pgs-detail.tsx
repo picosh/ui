@@ -94,6 +94,13 @@ export function PgsDetailPage() {
             <code>{project.id}</code>
           </dd>
 
+          <dt>Site</dt>
+          <dd>
+            <ExternalLink href={getProjectUrl(user, project)}>
+              View
+            </ExternalLink>
+          </dd>
+
           <dt>Links To</dt>
           <dd>
             {isProjectLinked(project) ? (
