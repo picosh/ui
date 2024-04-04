@@ -313,6 +313,8 @@ export const selectProjectByName = createSelector(
     projects.find((p) => p.name === name) || schema.projects.empty,
 );
 
+export const sortIntervalByTime = (a: VisitInterval, b: VisitInterval) =>
+  new Date(a.interval).getTime() - new Date(b.interval).getTime();
 export const sortIntervalByVisitors = (a: VisitInterval, b: VisitInterval) =>
   b.visitors - a.visitors;
 export const sortVisitsByCounts = (a: VisitUrl, b: VisitUrl) =>
@@ -324,7 +326,7 @@ export const deserializeAnalytics = (
   const dataIntervals = data?.intervals || [];
   const dataUrls = data?.top_urls || [];
   const dataReferers = data?.top_referers || [];
-  const intervals = [...dataIntervals].sort(sortIntervalByVisitors);
+  const intervals = [...dataIntervals].sort(sortIntervalByTime);
   const urls = [...dataUrls].sort(sortVisitsByCounts);
   const refs = [...dataReferers].sort(sortVisitsByCounts);
   return { intervals, urls, refs };

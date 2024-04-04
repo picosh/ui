@@ -736,7 +736,9 @@ export function SummaryAnalyticsView() {
   );
   const { data } = useCache(fetchSummaryAnalytics());
   const { intervals, urls, refs } = deserializeAnalytics(data);
-  const finIntervals = dedupeIntervals(intervals).slice(0, 15);
+  const finIntervals = dedupeIntervals(intervals)
+    .sort(sortIntervalByVisitors)
+    .slice(0, 15);
 
   if (!hasAnalytics) {
     return <AnalyticsSettings />;
