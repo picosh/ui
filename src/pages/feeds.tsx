@@ -24,7 +24,7 @@ export function FeedsPage() {
 
   return (
     <div className="group">
-      <PageHeader title="Feeds" docsUrl="/feeds" />
+      <PageHeader title="rss-to-email" docsUrl="/feeds" />
       <FeedsTable />
     </div>
   );
