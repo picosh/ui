@@ -129,9 +129,9 @@ export const Count = ({ value }: { value: number }) => {
 
 export const PubkeyView = ({ pubkey }: { pubkey: string }) => {
   return (
-    <div className="text-xs pill" title={pubkey}>
+    <code className="text-xs" title={pubkey}>
       {pubkey}
-    </div>
+    </code>
   );
 };
 
@@ -157,7 +157,7 @@ export const RssBox = ({ showTitle = true }: { showTitle?: boolean }) => {
       <pre className="m-0">https://auth.pico.sh/rss/{token}</pre>
 
       <h4 className="text-md m-0">
-        <ExternalLink href="https://pico.sh/feeds">feeds.sh</ExternalLink>
+        <ExternalLink href="https://pico.sh/feeds">rss-to-email</ExternalLink>
       </h4>
 
       <div>
@@ -168,7 +168,7 @@ export const RssBox = ({ showTitle = true }: { showTitle?: boolean }) => {
 =: digest_interval 1day
 => https://auth.pico.sh/rss/${token}`}</pre>
 
-      <pre className="m-0">rsync pico.txt feeds.sh:/</pre>
+      <pre className="m-0">rsync pico.txt feeds.pico.sh:/</pre>
     </div>
   );
 };
@@ -294,7 +294,7 @@ export function FeaturesTable() {
           return (
             <tr key={feature.id}>
               <td className="text-left">
-                <div className="pill">{feature.name}</div>
+                <code>{feature.name}</code>
               </td>
               <td className="text-left">{prettyDate(feature.expires_at)}</td>
               <td className="text-center">

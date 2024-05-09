@@ -3,7 +3,6 @@ import { schema, selectHasRegistered, useSelector } from "./api.ts";
 import {
   feedsUrl,
   homeUrl,
-  imgsUrl,
   pastesUrl,
   pgsUrl,
   proseUrl,
@@ -42,10 +41,9 @@ export function Nav() {
         <Logo />
       </NavLink>
       <NavLink to={pgsUrl()}>pages</NavLink>
-      <NavLink to={imgsUrl()}>imgs</NavLink>
       <NavLink to={proseUrl()}>prose</NavLink>
       <NavLink to={pastesUrl()}>pastes</NavLink>
-      <NavLink to={feedsUrl()}>feeds</NavLink>
+      <NavLink to={feedsUrl()}>rss-to-email</NavLink>
       <NavLink to={settingsUrl()}>{user.name}</NavLink>
     </nav>
   );

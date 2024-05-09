@@ -52,9 +52,6 @@ export const [schema, initialState] = createSchema({
   config: slice.obj({
     mockApi: import.meta.env.VITE_MOCK_API || "false",
     apiUrl: import.meta.env.VITE_API_URL || `${location.origin}/api`,
-    dockerUrl:
-      import.meta.env.VITE_DOCKER_API_URL ||
-      `${location.protocol}//${location.hostname}:1338`,
   }),
   user: slice.obj({
     id: "",
@@ -117,12 +114,6 @@ export const [schema, initialState] = createSchema({
       mod_time: now,
     },
   }),
-  imageRepos: slice.table({
-    empty: {
-      id: "",
-      tags: [] as string[],
-    },
-  }),
 });
 export type WebState = typeof initialState;
 export type User = WebState["user"];
@@ -132,7 +123,6 @@ export type FeatureFlag = WebState["features"][string];
 export type Post = WebState["posts"][string];
 export type Project = WebState["projects"][string];
 export type ProjectObject = WebState["objects"][string];
-export type ImageRepo = WebState["imageRepos"][string];
 
 export const useSelector: TypedUseSelectorHook<WebState> = useSel;
 
@@ -562,16 +552,6 @@ export const fetchProjectObjects = api.get<
   );
   yield* schema.update(schema.objects.add(objects));
 });
-
-export const updateDockerConfig = thunks.create<{ url: string }>(
-  "update-docker-config",
-  function* (ctx, next) {
-    yield* schema.update(
-      schema.config.update({ key: "dockerUrl", value: ctx.payload.url }),
-    );
-    yield* next();
-  },
-);
 
 export const fetchPubkeys = api.get<never, { pubkeys: Pubkey[] }>("/pubkeys", [
   function* (ctx, next) {
