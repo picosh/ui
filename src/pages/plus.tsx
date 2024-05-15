@@ -11,8 +11,7 @@ import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "starfx/react";
 
-const paymentLink =
-  "https://checkout.pico.sh/buy/73c26cf9-3fac-44c3-b744-298b3032a96b?discount=0";
+const paymentLink = "https://auth.pico.sh/checkout";
 
 export function PlusPage() {
   const user = useSelector(schema.user.select);
@@ -98,6 +97,7 @@ export function PlusPage() {
                 <li>full access</li>
               </ul>
             </li>
+            <li>20GB total storage</li>
           </ul>
         </div>
         <div>
@@ -112,7 +112,7 @@ export function PlusPage() {
             </h3>
             <div className="my-2">
               <ExternalLink
-                href={`${paymentLink}&checkout[custom][username]=${user.name}`}
+                href={`${paymentLink}/${user.name}`}
                 className="btn-link"
               >
                 JOIN
