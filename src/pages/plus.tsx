@@ -15,7 +15,7 @@ const paymentLink = "https://auth.pico.sh/checkout";
 
 export function PlusPage() {
   const user = useSelector(schema.user.select);
-  const feature = useSelector((s) => selectFeatureByName(s, { name: "pgs" }));
+  const feature = useSelector((s) => selectFeatureByName(s, { name: "plus" }));
   const dispatch = useDispatch();
 
   useEffect(() => {

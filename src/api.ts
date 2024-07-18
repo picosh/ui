@@ -1,6 +1,6 @@
 import {
-  ApiCtx,
-  Next,
+  type ApiCtx,
+  type Next,
   createAction,
   createApi,
   createSchema,
@@ -12,7 +12,7 @@ import {
   select,
   slice,
 } from "starfx";
-import { TypedUseSelectorHook, useSelector as useSel } from "starfx/react";
+import { type TypedUseSelectorHook, useSelector as useSel } from "starfx/react";
 
 interface AclData {
   data: null | string[];
@@ -325,7 +325,7 @@ export const deserializeAnalytics = (
 export const selectHasPlus = createSelector(
   schema.features.selectTableAsList,
   (features) => {
-    return features.find((f) => f.name === "pgs");
+    return features.find((f) => f.name === "plus");
   },
 );
 

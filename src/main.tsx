@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import { Operation, createStore, parallel, put, takeEvery } from "starfx";
+import { type Operation, createStore, parallel, put, takeEvery } from "starfx";
 import { Provider } from "starfx/react";
 import { api, bootup, initialState, schema, thunks } from "./api.ts";
 import { router } from "./router.tsx";

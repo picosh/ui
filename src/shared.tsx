@@ -17,8 +17,8 @@ import {
   useQuery,
 } from "starfx/react";
 import {
-  VisitInterval,
-  VisitUrl,
+  type VisitInterval,
+  type VisitUrl,
   deserializeAnalytics,
   fetchOrCreateToken,
   fetchSummaryAnalytics,
@@ -33,7 +33,7 @@ import {
   toggleAnalytics,
   useSelector,
 } from "./api";
-import { LineChart, Point } from "./chart";
+import { LineChart, type Point } from "./chart";
 import { prettyDate } from "./date";
 
 const bytesToMb = (num: number) => num / 1000 / 1000;

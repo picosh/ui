@@ -1,5 +1,5 @@
 import {
-  Project,
+  type Project,
   fetchProjects,
   getProjectUrl,
   isProjectLinked,

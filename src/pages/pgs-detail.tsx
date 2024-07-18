@@ -1,5 +1,5 @@
 import {
-  ProjectObject,
+  type ProjectObject,
   deserializeAnalytics,
   fetchMonthlyAnalyticsByProject,
   fetchProjectObjects,

@@ -1,4 +1,4 @@
-import { NavLink as NLink, NavLinkProps, Outlet } from "react-router-dom";
+import { NavLink as NLink, type NavLinkProps, Outlet } from "react-router-dom";
 import { schema, selectHasRegistered, useSelector } from "./api.ts";
 import {
   feedsUrl,
